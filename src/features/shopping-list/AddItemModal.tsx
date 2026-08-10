@@ -1,12 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Keyboard } from 'react-native';
-import { ModalWrapper, Input, Select, Button, CurrencyInput } from '@/components/ui';
-import { useProducts, useAddProduct } from '@/services/supabase/hooks';
-import { useAddListItem } from '@/services/supabase/hooks';
-import { useSearchProducts } from '@/services/supabase/hooks';
-import { useUIStore } from '@/stores/uiStore';
-import { CATEGORIES, UNITS, Category, Unit } from '@/types/supabase';
-import { ShoppingListItemInsert } from '@/types/supabase';
+import { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Keyboard,
+} from "react-native";
+import {
+  ModalWrapper,
+  Input,
+  Select,
+  Button,
+  CurrencyInput,
+} from "@/components/ui";
+import { useProducts, useAddProduct } from "@/services/supabase/hooks";
+import { useAddListItem } from "@/services/supabase/hooks";
+import { useUIStore } from "@/stores/uiStore";
+import { CATEGORIES, UNITS, Category, Unit } from "@/types/supabase";
+import { ShoppingListItemInsert } from "@/types/supabase";
 
 interface AddItemModalProps {
   visible: boolean;
@@ -21,42 +33,42 @@ export function AddItemModal({
   onSuccess,
   initialName,
 }: AddItemModalProps) {
-  const { showAddModal, setShowAddModal } = useUIStore();
+  const { setShowAddModal } = useUIStore();
   const { data: products } = useProducts();
-  const { data: searchResults } = useSearchProducts('');
+  const { data: searchResults } = useSearchProducts("");
   const addListItem = useAddListItem();
   const addProduct = useAddProduct();
 
-  const [name, setName] = useState(initialName || '');
+  const [name, setName] = useState(initialName || "");
   const [quantity, setQuantity] = useState(1);
-  const [unit, setUnit] = useState<Unit>('unidade');
-  const [category, setCategory] = useState<Category>('Alimentos');
-  const [notes, setNotes] = useState('');
+  const [unit, setUnit] = useState<Unit>("unidade");
+  const [category, setCategory] = useState<Category>("Alimentos");
+  const [notes, setNotes] = useState("");
   const [estimatedPrice, setEstimatedPrice] = useState(0);
   const [showProductPicker, setShowProductPicker] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    setName(initialName || '');
+    setName(initialName || "");
     setQuantity(1);
-    setUnit('unidade');
-    setCategory('Alimentos');
-    setNotes('');
+    setUnit("unidade");
+    setCategory("Alimentos");
+    setNotes("");
     setEstimatedPrice(0);
     setSelectedProduct(null);
-    setError('');
+    setError("");
   }, [visible, initialName]);
 
   const handleSubmit = async () => {
     if (!name.trim()) {
-      setError('Nome é obrigatório');
+      setError("Nome é obrigatório");
       return;
     }
 
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
       let productId: string | undefined;
@@ -65,7 +77,7 @@ export function AddItemModal({
         productId = selectedProduct.id;
       } else {
         const existingProduct = products?.find(
-          (p) => p.name.toLowerCase() === name.toLowerCase().trim()
+          (p) => p.name.toLowerCase() === name.toLowerCase().trim(),
         );
         if (!existingProduct) {
           const newProduct = await addProduct.mutateAsync({
@@ -95,7 +107,7 @@ export function AddItemModal({
       onSuccess?.();
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Erro ao adicionar item');
+      setError(err.message || "Erro ao adicionar item");
     } finally {
       setLoading(false);
     }
@@ -103,18 +115,18 @@ export function AddItemModal({
 
   const handleQuickAdd = async () => {
     if (!name.trim()) {
-      setError('Nome é obrigatório');
+      setError("Nome é obrigatório");
       return;
     }
 
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
       let productId: string | undefined;
 
       const existingProduct = products?.find(
-        (p) => p.name.toLowerCase() === name.toLowerCase().trim()
+        (p) => p.name.toLowerCase() === name.toLowerCase().trim(),
       );
       if (existingProduct) {
         productId = existingProduct.id;
@@ -124,9 +136,9 @@ export function AddItemModal({
         product_id: productId,
         name: name.trim(),
         quantity: 1,
-        unit: 'unidade',
+        unit: "unidade",
         estimated_price: null,
-        category: 'Alimentos',
+        category: "Alimentos",
         notes: null,
       };
 
@@ -134,7 +146,7 @@ export function AddItemModal({
       onSuccess?.();
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Erro ao adicionar item');
+      setError(err.message || "Erro ao adicionar item");
     } finally {
       setLoading(false);
     }
@@ -146,14 +158,15 @@ export function AddItemModal({
     setQuantity(product.default_quantity);
     setUnit(product.default_unit);
     setCategory(product.category);
-    setNotes(product.notes || '');
+    setNotes(product.notes || "");
     setShowProductPicker(false);
     Keyboard.dismiss();
   };
 
-  const filteredProducts = products?.filter((p) =>
-    p.name.toLowerCase().includes(name.toLowerCase())
-  ) ?? [];
+  const filteredProducts =
+    products?.filter((p) =>
+      p.name.toLowerCase().includes(name.toLowerCase()),
+    ) ?? [];
 
   return (
     <ModalWrapper visible={visible} onClose={onClose} title="Adicionar Item">
@@ -170,7 +183,11 @@ export function AddItemModal({
         {name.length >= 2 && filteredProducts.length > 0 && (
           <View style={styles.suggestions}>
             <Text style={styles.suggestionsLabel}>Sugestões:</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ gap: 8 }}
+            >
               {filteredProducts.slice(0, 5).map((product) => (
                 <TouchableOpacity
                   key={product.id}
@@ -252,7 +269,7 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   row: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
   },
   halfInput: {
@@ -263,10 +280,10 @@ const styles = StyleSheet.create({
   },
   suggestionsLabel: {
     fontSize: 13,
-    color: '#757575',
+    color: "#757575",
   },
   suggestionChip: {
-    backgroundColor: '#E8F5E9',
+    backgroundColor: "#E8F5E9",
     borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -274,15 +291,15 @@ const styles = StyleSheet.create({
   },
   suggestionChipText: {
     fontSize: 14,
-    fontWeight: '500',
-    color: '#2E7D32',
+    fontWeight: "500",
+    color: "#2E7D32",
   },
   suggestionChipDetail: {
     fontSize: 12,
-    color: '#4CAF50',
+    color: "#4CAF50",
   },
   buttonRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
     marginTop: 8,
   },

@@ -1,8 +1,8 @@
-import React from 'react';
-import { RootStack, RootStackParamList } from './types';
-import { AuthStackNavigator } from './AuthStack';
-import { AppStackNavigator } from './AppStack';
-import { useAuth } from '@/features/auth/useAuth';
+import React from "react";
+import { RootStack, RootStackParamList } from "./types";
+import { AuthStackNavigator } from "./AuthStack";
+import { AppStackNavigator } from "./AppStack";
+import { useAuth } from "@/core/providers/AuthProvider";
 
 export function RootNavigator() {
   const { user, loading } = useAuth();

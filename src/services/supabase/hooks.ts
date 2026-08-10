@@ -1,9 +1,4 @@
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  QueryKey,
-} from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   fetchProducts,
   fetchShoppingList,
@@ -19,15 +14,14 @@ import {
   updateShoppingSession,
   insertShoppingItems,
   updateShoppingItem,
-  findProductByName,
   searchProducts,
-} from './queries';
+} from "./queries";
 import {
   productKeys,
   shoppingListKeys,
   sessionKeys,
   sessionItemsKeys,
-} from './queries';
+} from "./queries";
 import type {
   Product,
   ProductInsert,
@@ -39,7 +33,8 @@ import type {
   ShoppingSessionUpdate,
   ShoppingItem,
   ShoppingItemInsert,
-} from '@/types/supabase';
+} from "@/types/supabase";
+import { supabase } from "./client";
 
 export function useProducts() {
   return useQuery({
@@ -59,7 +54,7 @@ export function useShoppingList() {
 
 export function useCompletedSessions() {
   return useQuery({
-    queryKey: sessionKeys.list('completed'),
+    queryKey: sessionKeys.list("completed"),
     queryFn: fetchCompletedSessions,
     staleTime: 60 * 1000,
   });
@@ -100,15 +95,6 @@ export function useSearchProducts(query: string) {
   });
 }
 
-export function useFindProductByName(name: string) {
-  return useQuery({
-    queryKey: productKeys.detail(name),
-    queryFn: () => findProductByName(name),
-    enabled: !!name,
-    staleTime: 60 * 1000,
-  });
-}
-
 export function useAddProduct() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -125,11 +111,21 @@ export function useAddListItem() {
     mutationFn: (item: ShoppingListItemInsert) => insertShoppingListItem(item),
     onMutate: async (newItem) => {
       await queryClient.cancelQueries({ queryKey: shoppingListKeys.lists() });
-      const previous = queryClient.getQueryData<ShoppingListItem[]>(shoppingListKeys.lists());
-      queryClient.setQueryData<ShoppingListItem[]>(shoppingListKeys.lists(), (old) => [
-        ...(old ?? []),
-        { ...newItem, id: `temp-${Date.now()}`, created_at: new Date().toISOString(), updated_at: new Date().toISOString() } as ShoppingListItem,
-      ]);
+      const previous = queryClient.getQueryData<ShoppingListItem[]>(
+        shoppingListKeys.lists(),
+      );
+      queryClient.setQueryData<ShoppingListItem[]>(
+        shoppingListKeys.lists(),
+        (old) => [
+          ...(old ?? []),
+          {
+            ...newItem,
+            id: `temp-${Date.now()}`,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          } as ShoppingListItem,
+        ],
+      );
       return { previous };
     },
     onError: (err, variables, context) => {
@@ -146,15 +142,26 @@ export function useAddListItem() {
 export function useUpdateListItem() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, updates }: { id: string; updates: ShoppingListItemUpdate }) =>
-      updateShoppingListItem(id, updates),
+    mutationFn: ({
+      id,
+      updates,
+    }: {
+      id: string;
+      updates: ShoppingListItemUpdate;
+    }) => updateShoppingListItem(id, updates),
     onMutate: async ({ id, updates }) => {
       await queryClient.cancelQueries({ queryKey: shoppingListKeys.lists() });
-      const previous = queryClient.getQueryData<ShoppingListItem[]>(shoppingListKeys.lists());
-      queryClient.setQueryData<ShoppingListItem[]>(shoppingListKeys.lists(), (old) =>
-        (old ?? []).map((item) =>
-          item.id === id ? { ...item, ...updates, updated_at: new Date().toISOString() } : item
-        )
+      const previous = queryClient.getQueryData<ShoppingListItem[]>(
+        shoppingListKeys.lists(),
+      );
+      queryClient.setQueryData<ShoppingListItem[]>(
+        shoppingListKeys.lists(),
+        (old) =>
+          (old ?? []).map((item) =>
+            item.id === id
+              ? { ...item, ...updates, updated_at: new Date().toISOString() }
+              : item,
+          ),
       );
       return { previous };
     },
@@ -175,9 +182,12 @@ export function useDeleteListItem() {
     mutationFn: (id: string) => deleteShoppingListItem(id),
     onMutate: async (id) => {
       await queryClient.cancelQueries({ queryKey: shoppingListKeys.lists() });
-      const previous = queryClient.getQueryData<ShoppingListItem[]>(shoppingListKeys.lists());
-      queryClient.setQueryData<ShoppingListItem[]>(shoppingListKeys.lists(), (old) =>
-        (old ?? []).filter((item) => item.id !== id)
+      const previous = queryClient.getQueryData<ShoppingListItem[]>(
+        shoppingListKeys.lists(),
+      );
+      queryClient.setQueryData<ShoppingListItem[]>(
+        shoppingListKeys.lists(),
+        (old) => (old ?? []).filter((item) => item.id !== id),
       );
       return { previous };
     },
@@ -198,7 +208,7 @@ export function useStartPurchase() {
     mutationFn: async (listItems: ShoppingListItem[]) => {
       const session = await insertShoppingSession({
         started_at: new Date().toISOString(),
-        status: 'active',
+        status: "active",
         total_amount: 0,
       });
       const sessionItems: ShoppingItemInsert[] = listItems.map((item) => ({
@@ -225,13 +235,24 @@ export function useStartPurchase() {
 export function useUpdatePurchaseItem() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, updates }: { id: string; updates: Partial<ShoppingItemInsert> }) =>
-      updateShoppingItem(id, updates),
+    mutationFn: ({
+      id,
+      updates,
+    }: {
+      id: string;
+      updates: Partial<ShoppingItemInsert>;
+    }) => updateShoppingItem(id, updates),
     onMutate: async ({ id, updates }) => {
       await queryClient.cancelQueries({ queryKey: sessionItemsKeys.lists() });
-      const previous = queryClient.getQueryData<ShoppingItem[]>(sessionItemsKeys.lists());
-      queryClient.setQueryData<ShoppingItem[]>(sessionItemsKeys.lists(), (old) =>
-        (old ?? []).map((item) => (item.id === id ? { ...item, ...updates } : item))
+      const previous = queryClient.getQueryData<ShoppingItem[]>(
+        sessionItemsKeys.lists(),
+      );
+      queryClient.setQueryData<ShoppingItem[]>(
+        sessionItemsKeys.lists(),
+        (old) =>
+          (old ?? []).map((item) =>
+            item.id === id ? { ...item, ...updates } : item,
+          ),
       );
       return { previous };
     },
@@ -241,7 +262,9 @@ export function useUpdatePurchaseItem() {
       }
     },
     onSettled: (data, error, variables) => {
-      queryClient.invalidateQueries({ queryKey: sessionItemsKeys.list(variables.id.split('-')[0]) });
+      queryClient.invalidateQueries({
+        queryKey: sessionItemsKeys.list(variables.id.split("-")[0]),
+      });
     },
   });
 }
@@ -261,18 +284,20 @@ export function useFinishPurchase() {
       await updateShoppingSession(sessionId, {
         finished_at: new Date().toISOString(),
         total_amount: totalAmount,
-        status: 'completed',
+        status: "completed",
       });
       if (purchasedItemIds.length > 0) {
         await supabase
-          .from('shopping_list_items')
+          .from("shopping_list_items")
           .delete()
-          .in('id', purchasedItemIds);
+          .in("id", purchasedItemIds);
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: sessionKeys.active() });
-      queryClient.invalidateQueries({ queryKey: sessionKeys.list('completed') });
+      queryClient.invalidateQueries({
+        queryKey: sessionKeys.list("completed"),
+      });
       queryClient.invalidateQueries({ queryKey: shoppingListKeys.lists() });
     },
   });
@@ -301,5 +326,3 @@ export function useBuyAgain() {
     },
   });
 }
-
-import { supabase } from './client';

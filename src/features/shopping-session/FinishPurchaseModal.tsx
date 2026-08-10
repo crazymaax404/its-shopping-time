@@ -1,37 +1,17 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { ModalWrapper, Button } from '@/components/ui';
-import { formatBRL } from '@/utils/currency';
+import { View, Text, StyleSheet } from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { ModalWrapper, Button } from "@/components/ui";
+import { formatBRL } from "@/utils/currency";
+import { PurchaseStackParamList } from "@/core/navigation/types";
 
-interface FinishPurchaseModalProps {
-  sessionId: string;
-  totalAmount: number;
-  purchasedItemIds: string[];
-}
+type RouteProps = PurchaseStackParamList["FinishPurchase"];
 
-export function FinishPurchaseModal({
-  sessionId,
-  totalAmount,
-  purchasedItemIds,
-}: FinishPurchaseModalProps) {
-  const navigation = React.useContext(
-    React.createContext<any>(null)
-  )?.navigation ?? React.useMemo(() => {
-    const nav: any = React.useContext(
-      React.createContext({ navigate: () => {} })
-    );
-    return nav;
-  }, []);
+export function FinishPurchaseModal() {
+  const navigation = useNavigation();
+  const route = useRoute<RouteProps>();
+  const { sessionId, totalAmount, purchasedItemIds } = route.params;
 
-  // We'll get navigation from the route params
-  const route = React.useContext(
-    React.createContext<any>({ params: { sessionId, totalAmount, purchasedItemIds } })
-  );
-
-  const { sessionId: routeSessionId, totalAmount: routeTotalAmount, purchasedItemIds: routePurchasedItemIds } = route?.params ?? {};
-
-  const handleFinish = async () => {
-    // This is handled by the PurchaseScreen via alert
+  const handleFinish = () => {
     navigation.goBack();
   };
 
@@ -52,7 +32,9 @@ export function FinishPurchaseModal({
         </View>
         <View style={styles.summary}>
           <Text style={styles.summaryLabel}>Total</Text>
-          <Text style={[styles.summaryValue, styles.totalValue]}>{formatBRL(totalAmount)}</Text>
+          <Text style={[styles.summaryValue, styles.totalValue]}>
+            {formatBRL(totalAmount)}
+          </Text>
         </View>
 
         <View style={styles.buttonRow}>
@@ -69,27 +51,27 @@ const styles = StyleSheet.create({
     gap: 24,
   },
   summary: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 8,
   },
   summaryLabel: {
     fontSize: 16,
-    color: '#757575',
+    color: "#757575",
   },
   summaryValue: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#212121',
+    fontWeight: "600",
+    color: "#212121",
   },
   totalValue: {
-    color: '#2E7D32',
+    color: "#2E7D32",
     fontSize: 22,
-    fontWeight: '700',
+    fontWeight: "700",
   },
   buttonRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
     marginTop: 8,
   },

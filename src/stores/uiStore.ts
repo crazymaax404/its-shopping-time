@@ -1,17 +1,15 @@
-import { create } from 'zustand';
-import { persist, StateStorage } from 'zustand/middleware';
-import { zustandStorage } from '@/utils/storage';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { zustandStorage } from "@/utils/storage";
 
 interface UIState {
   showAddModal: boolean;
   showEditModal: boolean;
   editingItemId: string | null;
-  showFinishPurchaseModal: boolean;
   activeSessionId: string | null;
   setShowAddModal: (show: boolean) => void;
   setShowEditModal: (show: boolean, itemId?: string) => void;
-  setShowFinishPurchaseModal: (show: boolean, sessionId?: string) => void;
-  clearEditItem: () => void;
+  setActiveSessionId: (sessionId: string | null) => void;
 }
 
 export const useUIStore = create<UIState>()(
@@ -20,19 +18,18 @@ export const useUIStore = create<UIState>()(
       showAddModal: false,
       showEditModal: false,
       editingItemId: null,
-      showFinishPurchaseModal: false,
       activeSessionId: null,
       setShowAddModal: (show) => set({ showAddModal: show }),
-      setShowEditModal: (show, itemId) => set({ showEditModal: show, editingItemId: itemId ?? null }),
-      setShowFinishPurchaseModal: (show, sessionId) => set({ showFinishPurchaseModal: show, activeSessionId: sessionId ?? null }),
-      clearEditItem: () => set({ showEditModal: false, editingItemId: null }),
+      setShowEditModal: (show, itemId) =>
+        set({ showEditModal: show, editingItemId: itemId ?? null }),
+      setActiveSessionId: (sessionId) => set({ activeSessionId: sessionId }),
     }),
     {
-      name: 'ui-store',
+      name: "ui-store",
       storage: zustandStorage,
       partialize: (state) => ({
         activeSessionId: state.activeSessionId,
       }),
-    }
-  )
+    },
+  ),
 );

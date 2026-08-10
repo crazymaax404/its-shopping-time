@@ -1,7 +1,5 @@
-import React, { ReactNode, useEffect } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useState } from 'react';
-import { shoppingListKeys } from '@/services/supabase/queries';
+import React, { ReactNode, useState } from "react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export function QueryProvider({ children }: { children: ReactNode }) {
   const [queryClient] = useState(
@@ -18,12 +16,10 @@ export function QueryProvider({ children }: { children: ReactNode }) {
             retry: 0,
           },
         },
-      })
+      }),
   );
 
-  useEffect(() => {
-    queryClient.removeQueries({ queryKey: shoppingListKeys.lists() });
-  }, [queryClient]);
-
-  return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  return (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
 }

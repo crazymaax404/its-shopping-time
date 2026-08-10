@@ -1,10 +1,8 @@
-import React from "react";
-import { AppStack, AppStackParamList } from "./types";
+import { AppStack } from "./types";
 import { AppTabNavigator } from "./AppTabs";
 import { PurchaseScreen } from "@/features/shopping-session/PurchaseScreen";
 import { FinishPurchaseModal } from "@/features/shopping-session/FinishPurchaseModal";
 import { HistoryDetailScreen } from "@/features/history/HistoryDetailScreen";
-import { Ionicons } from "@expo/vector-icons";
 import { HistoryListScreen } from "@/features/history/HistoryListScreen";
 
 export function AppStackNavigator() {

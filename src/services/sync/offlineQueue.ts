@@ -1,6 +1,6 @@
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useEffect, useCallback } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../supabase/client';
 import { useUIStore } from '@/stores/uiStore';
 import type { ShoppingListItemInsert, ShoppingListItemUpdate, ShoppingItemInsert } from '@/types/supabase';

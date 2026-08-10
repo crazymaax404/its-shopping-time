@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   Text,
@@ -6,25 +6,23 @@ import {
   FlatList,
   Alert,
   TouchableOpacity,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { useNavigation, useRoute } from "@react-navigation/native";
+} from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { RouteProp } from '@react-navigation/native';
 import {
   useSessionDetail,
   useSessionItems,
   useBuyAgain,
-} from "@/services/supabase/hooks";
-import { formatDateTimeBR } from "@/utils/date";
-import { formatBRL as formatBRLCurrency } from "@/utils/currency";
-import { ShoppingSession, ShoppingItem } from "@/types/supabase";
-
-interface HistoryDetailRouteProps {
-  sessionId: string;
-}
+} from '@/services/supabase/hooks';
+import { formatDateTimeBR } from '@/utils/date';
+import { formatBRL as formatBRLCurrency } from '@/utils/currency';
+import { ShoppingSession, ShoppingItem } from '@/types/supabase';
+import { AppStackParamList } from '@/core/navigation/types';
 
 export function HistoryDetailScreen() {
   const navigation = useNavigation<any>();
-  const route = useRoute<HistoryDetailRouteProps>();
+  const route = useRoute<RouteProp<AppStackParamList, 'HistoryDetail'>>();
   const sessionId = route.params.sessionId;
 
   const { data: session, isLoading: sessionLoading } =
@@ -33,17 +31,17 @@ export function HistoryDetailScreen() {
   const buyAgain = useBuyAgain();
 
   const handleBuyAgain = async () => {
-    Alert.alert("Comprar novamente", "Adicionar estes itens à lista atual?", [
-      { text: "Cancelar", style: "cancel" },
+    Alert.alert('Comprar novamente', 'Adicionar estes itens à lista atual?', [
+      { text: 'Cancelar', style: 'cancel' },
       {
-        text: "Adicionar",
+        text: 'Adicionar',
         onPress: async () => {
           try {
             await buyAgain.mutateAsync(sessionId);
-            Alert.alert("Sucesso", "Itens adicionados à lista!");
+            Alert.alert('Sucesso', 'Itens adicionados à lista!');
             navigation.goBack();
           } catch (err: any) {
-            Alert.alert("Erro", err.message || "Erro ao adicionar itens");
+            Alert.alert('Erro', err.message || 'Erro ao adicionar itens');
           }
         },
       },
@@ -94,7 +92,7 @@ export function HistoryDetailScreen() {
           <Text style={styles.headerDate}>
             {session.finished_at
               ? formatDateTimeBR(session.finished_at)
-              : "Em andamento"}
+              : 'Em andamento'}
           </Text>
         </View>
         <View style={styles.headerTotal}>
@@ -138,42 +136,42 @@ export function HistoryDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#F0F0F0",
+    borderBottomColor: '#F0F0F0',
   },
   headerInfo: {
     flex: 1,
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: "700",
-    color: "#212121",
+    fontWeight: '700',
+    color: '#212121',
   },
   headerDate: {
     fontSize: 14,
-    color: "#757575",
+    color: '#757575',
     marginTop: 2,
   },
   headerTotal: {
-    alignItems: "flex-end",
+    alignItems: 'flex-end',
   },
   headerTotalLabel: {
     fontSize: 12,
-    color: "#9E9E9E",
+    color: '#9E9E9E',
   },
   headerTotalValue: {
     fontSize: 18,
-    fontWeight: "700",
-    color: "#2E7D32",
+    fontWeight: '700',
+    color: '#2E7D32',
   },
   listContent: {
     paddingHorizontal: 16,
@@ -181,9 +179,9 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   item: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingVertical: 10,
   },
   itemLeft: {
@@ -191,96 +189,96 @@ const styles = StyleSheet.create({
   },
   itemName: {
     fontSize: 16,
-    fontWeight: "500",
-    color: "#212121",
+    fontWeight: '500',
+    color: '#212121',
   },
   itemDetails: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     marginTop: 2,
     gap: 8,
   },
   itemDetail: {
     fontSize: 13,
-    color: "#757575",
+    color: '#757575',
   },
   itemRight: {
-    alignItems: "flex-end",
+    alignItems: 'flex-end',
     marginLeft: 12,
   },
   itemTotal: {
     fontSize: 15,
-    fontWeight: "600",
-    color: "#212121",
+    fontWeight: '600',
+    color: '#212121',
   },
   separator: {
     height: 1,
-    backgroundColor: "#F0F0F0",
+    backgroundColor: '#F0F0F0',
     marginHorizontal: 16,
   },
   footer: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     paddingHorizontal: 16,
     paddingBottom: 24,
     paddingTop: 16,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderTopWidth: 1,
-    borderTopColor: "#F0F0F0",
+    borderTopColor: '#F0F0F0',
     gap: 12,
   },
   footerTotal: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 4,
   },
   footerTotalLabel: {
     fontSize: 16,
-    fontWeight: "600",
-    color: "#424242",
+    fontWeight: '600',
+    color: '#424242',
   },
   footerTotalValue: {
     fontSize: 20,
-    fontWeight: "700",
-    color: "#2E7D32",
+    fontWeight: '700',
+    color: '#2E7D32',
   },
   buyAgainButton: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     gap: 8,
     height: 52,
     borderRadius: 10,
-    backgroundColor: "#2E7D32",
+    backgroundColor: '#2E7D32',
   },
   buyAgainText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   listFooter: {
     height: 20,
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   loadingText: {
     fontSize: 16,
-    color: "#757575",
+    color: '#757575',
   },
   errorContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 32,
   },
   errorText: {
     fontSize: 18,
-    color: "#757575",
+    color: '#757575',
   },
 });

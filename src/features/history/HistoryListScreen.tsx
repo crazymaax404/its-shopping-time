@@ -1,27 +1,47 @@
 import React, { useMemo } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useCompletedSessions } from '@/services/supabase/hooks';
-import { formatBRL, formatDateBR, formatMonthYearBR, groupByMonth, getMonthOrder } from '@/utils/date';
+import {
+  formatDateBR,
+  formatMonthYearBR,
+  groupByMonth,
+  getMonthOrder,
+} from '@/utils/date';
+import { formatBRL } from '@/utils/currency';
 import { ShoppingSession } from '@/types/supabase';
 
 export function HistoryListScreen() {
   const navigation = useNavigation<any>();
   const { data: sessions, isLoading, refetch } = useCompletedSessions();
 
-  const grouped = useMemo(() => {
+  const grouped = useMemo((): Array<{
+    month: string;
+    sessions: ShoppingSession[];
+  }> => {
     if (!sessions) return [];
     const groups = groupByMonth(sessions);
     return Object.entries(groups)
       .sort(([a], [b]) => getMonthOrder(b) - getMonthOrder(a))
-      .map(([month, sessions]) => ({ month, sessions }));
+      .map(([month, items]) => ({
+        month,
+        sessions: items as ShoppingSession[],
+      }));
   }, [sessions]);
 
   const renderItem = ({ item }: { item: ShoppingSession }) => (
     <TouchableOpacity
       style={styles.item}
-      onPress={() => navigation.navigate('HistoryDetail', { sessionId: item.id })}
+      onPress={() =>
+        navigation.navigate('HistoryDetail', { sessionId: item.id })
+      }
     >
       <View style={styles.itemLeft}>
         <Text style={styles.itemDate}>{formatDateBR(item.finished_at!)}</Text>
@@ -34,11 +54,18 @@ export function HistoryListScreen() {
     </TouchableOpacity>
   );
 
-  const renderSectionHeader = ({ section }: { section: { month: string; sessions: ShoppingSession[] } }) => (
+  const renderSectionHeader = ({
+    section,
+  }: {
+    section: { month: string; sessions: ShoppingSession[] };
+  }) => (
     <View style={styles.sectionHeader}>
-      <Text style={styles.sectionTitle}>{section.month.charAt(0).toUpperCase() + section.month.slice(1)}</Text>
+      <Text style={styles.sectionTitle}>
+        {section.month.charAt(0).toUpperCase() + section.month.slice(1)}
+      </Text>
       <Text style={styles.sectionCount}>
-        {section.sessions.length} compra{section.sessions.length !== 1 ? 's' : ''}
+        {section.sessions.length} compra
+        {section.sessions.length !== 1 ? 's' : ''}
       </Text>
     </View>
   );
@@ -68,7 +95,8 @@ export function HistoryListScreen() {
                   {item.month.charAt(0).toUpperCase() + item.month.slice(1)}
                 </Text>
                 <Text style={styles.sectionCount}>
-                  {item.sessions.length} compra{item.sessions.length !== 1 ? 's' : ''}
+                  {item.sessions.length} compra
+                  {item.sessions.length !== 1 ? 's' : ''}
                 </Text>
               </View>
               <FlatList

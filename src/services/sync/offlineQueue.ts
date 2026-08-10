@@ -3,7 +3,11 @@ import { useEffect, useCallback } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { supabase } from '../supabase/client';
 import { useUIStore } from '@/stores/uiStore';
-import type { ShoppingListItemInsert, ShoppingListItemUpdate, ShoppingItemInsert } from '@/types/supabase';
+import type {
+  ShoppingListItemInsert,
+  ShoppingListItemUpdate,
+  ShoppingItemInsert,
+} from '@/types/supabase';
 
 interface QueuedMutation {
   id: string;
@@ -40,12 +44,18 @@ export function useOfflineQueue() {
           case 'update_list': {
             await supabase
               .from('shopping_list_items')
-              .update({ ...mutation.payload.updates, updated_at: new Date().toISOString() })
+              .update({
+                ...mutation.payload.updates,
+                updated_at: new Date().toISOString(),
+              })
               .eq('id', mutation.payload.id);
             break;
           }
           case 'delete_list': {
-            await supabase.from('shopping_list_items').delete().eq('id', mutation.payload.id);
+            await supabase
+              .from('shopping_list_items')
+              .delete()
+              .eq('id', mutation.payload.id);
             break;
           }
           case 'update_session_item': {
@@ -69,7 +79,9 @@ export function useOfflineQueue() {
 
     queryClient.invalidateQueries({ queryKey: ['shoppingList'] });
     if (activeSessionId) {
-      queryClient.invalidateQueries({ queryKey: ['sessionItems', activeSessionId] });
+      queryClient.invalidateQueries({
+        queryKey: ['sessionItems', activeSessionId],
+      });
     }
   }, [isConnected, queryClient, activeSessionId]);
 
@@ -79,16 +91,19 @@ export function useOfflineQueue() {
     }
   }, [isConnected, processQueue]);
 
-  const queueMutation = useCallback((mutation: Omit<QueuedMutation, 'id' | 'timestamp'>) => {
-    const stored = localStorage.getItem(QUEUE_KEY);
-    const queue: QueuedMutation[] = stored ? JSON.parse(stored) : [];
-    queue.push({
-      ...mutation,
-      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
-      timestamp: Date.now(),
-    });
-    localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
-  }, []);
+  const queueMutation = useCallback(
+    (mutation: Omit<QueuedMutation, 'id' | 'timestamp'>) => {
+      const stored = localStorage.getItem(QUEUE_KEY);
+      const queue: QueuedMutation[] = stored ? JSON.parse(stored) : [];
+      queue.push({
+        ...mutation,
+        id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+        timestamp: Date.now(),
+      });
+      localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
+    },
+    [],
+  );
 
   return { queueMutation, processQueue };
 }
@@ -100,28 +115,28 @@ export function useOfflineMutations() {
     (item: ShoppingListItemInsert) => {
       queueMutation({ type: 'insert_list', payload: item });
     },
-    [queueMutation]
+    [queueMutation],
   );
 
   const updateListItemOffline = useCallback(
     (id: string, updates: ShoppingListItemUpdate) => {
       queueMutation({ type: 'update_list', payload: { id, updates } });
     },
-    [queueMutation]
+    [queueMutation],
   );
 
   const deleteListItemOffline = useCallback(
     (id: string) => {
       queueMutation({ type: 'delete_list', payload: { id } });
     },
-    [queueMutation]
+    [queueMutation],
   );
 
   const updateSessionItemOffline = useCallback(
     (id: string, updates: Partial<ShoppingItemInsert>) => {
       queueMutation({ type: 'update_session_item', payload: { id, updates } });
     },
-    [queueMutation]
+    [queueMutation],
   );
 
   return {

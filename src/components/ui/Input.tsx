@@ -15,6 +15,7 @@ interface InputProps {
   numberOfLines?: number;
   textAlign?: 'left' | 'center' | 'right';
   inputStyle?: any;
+  autoFocus?: boolean;
 }
 
 export function Input({
@@ -31,6 +32,7 @@ export function Input({
   numberOfLines,
   textAlign = 'left',
   inputStyle,
+  autoFocus = false,
 }: InputProps) {
   return (
     <View style={[styles.container, style]}>
@@ -47,11 +49,13 @@ export function Input({
         onChangeText={onChangeText}
         placeholder={placeholder}
         placeholderTextColor="#9E9E9E"
-        disabled={disabled}
+        editable={!disabled}
+        pointerEvents={disabled ? 'none' : 'auto'}
         keyboardType={keyboardType}
         secureTextEntry={secureTextEntry}
         multiline={multiline}
         numberOfLines={numberOfLines}
+        autoFocus={autoFocus}
       />
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>

@@ -1,6 +1,6 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { zustandStorage } from "@/utils/storage";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { zustandStorage } from '@/utils/storage';
 
 interface UIState {
   showAddModal: boolean;
@@ -25,7 +25,7 @@ export const useUIStore = create<UIState>()(
       setActiveSessionId: (sessionId) => set({ activeSessionId: sessionId }),
     }),
     {
-      name: "ui-store",
+      name: 'ui-store',
       storage: zustandStorage,
       partialize: (state) => ({
         activeSessionId: state.activeSessionId,

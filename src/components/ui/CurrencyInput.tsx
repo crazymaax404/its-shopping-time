@@ -1,8 +1,9 @@
 import React from 'react';
-import { TextInput, StyleSheet } from 'react-native';
+import { TextInput, StyleSheet, Text, View } from 'react-native';
 import { parseBRL, formatBRLInput } from '@/utils/currency';
 
 interface CurrencyInputProps {
+  label?: string;
   value: number;
   onChange: (cents: number) => void;
   placeholder?: string;
@@ -11,6 +12,7 @@ interface CurrencyInputProps {
 }
 
 export function CurrencyInput({
+  label,
   value,
   onChange,
   placeholder = 'R$ 0,00',
@@ -24,10 +26,8 @@ export function CurrencyInput({
   }, [value]);
 
   const handleChange = (newText: string) => {
-    const formatted = newText
-      .replace(/[^\d]/g, '')
-      .replace(/^0+/, '');
-    
+    const formatted = newText.replace(/[^\d]/g, '').replace(/^0+/, '');
+
     let displayText = '';
     if (formatted.length === 0) {
       displayText = '';
@@ -38,32 +38,39 @@ export function CurrencyInput({
     } else {
       displayText = formatted.slice(0, -2) + ',' + formatted.slice(-2);
     }
-    
+
     setText(displayText);
-    
+
     const cents = parseBRL(displayText);
     onChange(cents);
   };
 
   return (
-    <TextInput
-      style={[
-        styles.input,
-        style,
-      ]}
-      value={text}
-      onChangeText={handleChange}
-      placeholder={placeholder}
-      placeholderTextColor="#9E9E9E"
-      keyboardType="numeric"
-      textAlign="right"
-      disabled={disabled}
-      autoCompleteType="off"
-    />
+    <View style={styles.container}>
+      {label && <Text style={styles.label}>{label}</Text>}
+      <TextInput
+        style={[styles.input, style]}
+        value={text}
+        onChangeText={handleChange}
+        placeholder={placeholder}
+        placeholderTextColor="#9E9E9E"
+        keyboardType="numeric"
+        textAlign="right"
+        editable={!disabled}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    gap: 6,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#424242',
+  },
   input: {
     height: 48,
     borderWidth: 1,

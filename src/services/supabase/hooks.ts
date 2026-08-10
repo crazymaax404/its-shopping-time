@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   fetchProducts,
   fetchShoppingList,
@@ -15,13 +15,13 @@ import {
   insertShoppingItems,
   updateShoppingItem,
   searchProducts,
-} from "./queries";
+} from './queries';
 import {
   productKeys,
   shoppingListKeys,
   sessionKeys,
   sessionItemsKeys,
-} from "./queries";
+} from './queries';
 import type {
   Product,
   ProductInsert,
@@ -33,8 +33,8 @@ import type {
   ShoppingSessionUpdate,
   ShoppingItem,
   ShoppingItemInsert,
-} from "@/types/supabase";
-import { supabase } from "./client";
+} from '@/types/supabase';
+import { supabase } from './client';
 
 export function useProducts() {
   return useQuery({
@@ -54,7 +54,7 @@ export function useShoppingList() {
 
 export function useCompletedSessions() {
   return useQuery({
-    queryKey: sessionKeys.list("completed"),
+    queryKey: sessionKeys.list('completed'),
     queryFn: fetchCompletedSessions,
     staleTime: 60 * 1000,
   });
@@ -208,7 +208,7 @@ export function useStartPurchase() {
     mutationFn: async (listItems: ShoppingListItem[]) => {
       const session = await insertShoppingSession({
         started_at: new Date().toISOString(),
-        status: "active",
+        status: 'active',
         total_amount: 0,
       });
       const sessionItems: ShoppingItemInsert[] = listItems.map((item) => ({
@@ -263,7 +263,7 @@ export function useUpdatePurchaseItem() {
     },
     onSettled: (data, error, variables) => {
       queryClient.invalidateQueries({
-        queryKey: sessionItemsKeys.list(variables.id.split("-")[0]),
+        queryKey: sessionItemsKeys.list(variables.id.split('-')[0]),
       });
     },
   });
@@ -284,19 +284,19 @@ export function useFinishPurchase() {
       await updateShoppingSession(sessionId, {
         finished_at: new Date().toISOString(),
         total_amount: totalAmount,
-        status: "completed",
+        status: 'completed',
       });
       if (purchasedItemIds.length > 0) {
         await supabase
-          .from("shopping_list_items")
+          .from('shopping_list_items')
           .delete()
-          .in("id", purchasedItemIds);
+          .in('id', purchasedItemIds);
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: sessionKeys.active() });
       queryClient.invalidateQueries({
-        queryKey: sessionKeys.list("completed"),
+        queryKey: sessionKeys.list('completed'),
       });
       queryClient.invalidateQueries({ queryKey: shoppingListKeys.lists() });
     },

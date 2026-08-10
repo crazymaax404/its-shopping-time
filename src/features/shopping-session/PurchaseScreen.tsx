@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -8,21 +8,22 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { useSessionItems, useUpdatePurchaseItem, useFinishPurchase } from '@/services/supabase/hooks';
-import { useActiveSession } from '@/services/supabase/hooks';
+import { RouteProp } from '@react-navigation/native';
+import {
+  useSessionItems,
+  useUpdatePurchaseItem,
+  useFinishPurchase,
+  useActiveSession,
+} from '@/services/supabase/hooks';
 import { ListItem, Button } from '@/components/ui';
-import { formatBRL, parseBRLInput, formatBRLInput } from '@/utils/currency';
+import { formatBRL } from '@/utils/currency';
 import { ShoppingItem } from '@/types/supabase';
-
-interface PurchaseScreenRouteProps {
-  sessionId: string;
-}
+import { AppStackParamList } from '@/core/navigation/types';
 
 export function PurchaseScreen() {
   const navigation = useNavigation<any>();
-  const route = useRoute<PurchaseScreenRouteProps>();
+  const route = useRoute<RouteProp<AppStackParamList, 'Purchase'>>();
   const sessionId = route.params.sessionId;
 
   const { data: session } = useActiveSession();
@@ -30,7 +31,9 @@ export function PurchaseScreen() {
   const updateItem = useUpdatePurchaseItem();
   const finishPurchase = useFinishPurchase();
 
-  const [purchasedQuantities, setPurchasedQuantities] = useState<Record<string, number>>({});
+  const [purchasedQuantities, setPurchasedQuantities] = useState<
+    Record<string, number>
+  >({});
   const [prices, setPrices] = useState<Record<string, number>>({});
 
   const totalAmount = useMemo(() => {
@@ -61,13 +64,19 @@ export function PurchaseScreen() {
     setPrices((prev) => ({ ...prev, [id]: priceCents }));
     updateItem.mutate({
       id,
-      updates: { unit_price: priceCents, total_price: priceCents * (purchasedQuantities[id] || 0) },
+      updates: {
+        unit_price: priceCents,
+        total_price: priceCents * (purchasedQuantities[id] || 0),
+      },
     });
   };
 
   const handleFinish = async () => {
     if (purchasedItemIds.length === 0) {
-      Alert.alert('Nenhum item comprado', 'Marque pelo menos um item como comprado');
+      Alert.alert(
+        'Nenhum item comprado',
+        'Marque pelo menos um item como comprado',
+      );
       return;
     }
 
@@ -91,20 +100,22 @@ export function PurchaseScreen() {
             }
           },
         },
-      ]
+      ],
     );
   };
 
   const renderItem = ({ item }: { item: ShoppingItem }) => (
     <ListItem
-      item={{
-        ...item,
-        quantity: item.quantity,
-        unit: item.unit,
-        category: item.category,
-        notes: item.notes,
-        estimated_price: item.unit_price,
-      } as any}
+      item={
+        {
+          ...item,
+          quantity: item.quantity,
+          unit: item.unit,
+          category: item.category,
+          notes: item.notes,
+          estimated_price: item.unit_price,
+        } as any
+      }
       onToggle={() => {}}
       onPress={() => {}}
       onQuantityChange={() => {}}

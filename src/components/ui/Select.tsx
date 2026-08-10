@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Modal,
+  ScrollView,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 interface SelectOption {
@@ -7,10 +14,10 @@ interface SelectOption {
   value: string;
 }
 
-interface SelectProps {
+interface SelectProps<T extends string = string> {
   label?: string;
-  value: string;
-  onChange: (value: string) => void;
+  value: T;
+  onChange: (value: T) => void;
   options: SelectOption[];
   placeholder?: string;
   error?: string;
@@ -18,7 +25,7 @@ interface SelectProps {
   style?: any;
 }
 
-export function Select({
+export function Select<T extends string = string>({
   label,
   value,
   onChange,
@@ -27,7 +34,7 @@ export function Select({
   error,
   disabled = false,
   style,
-}: SelectProps) {
+}: SelectProps<T>) {
   const [showModal, setShowModal] = React.useState(false);
 
   const selectedOption = options.find((o) => o.value === value);
@@ -44,10 +51,9 @@ export function Select({
         onPress={() => !disabled && setShowModal(true)}
         activeOpacity={0.9}
       >
-        <Text style={[
-          styles.selectText,
-          !selectedOption && styles.placeholderText,
-        ]}>
+        <Text
+          style={[styles.selectText, !selectedOption && styles.placeholderText]}
+        >
           {selectedOption?.label ?? placeholder}
         </Text>
         <Ionicons name="chevron-down" size={24} color="#9E9E9E" />
@@ -55,7 +61,10 @@ export function Select({
       {error && <Text style={styles.errorText}>{error}</Text>}
 
       <Modal visible={showModal} animationType="slide" transparent={true}>
-        <TouchableOpacity onPress={() => setShowModal(false)} style={styles.modalOverlay}>
+        <TouchableOpacity
+          onPress={() => setShowModal(false)}
+          style={styles.modalOverlay}
+        >
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>{label || 'Selecionar'}</Text>
@@ -72,14 +81,16 @@ export function Select({
                     option.value === value && styles.optionSelected,
                   ]}
                   onPress={() => {
-                    onChange(option.value);
+                    onChange(option.value as T);
                     setShowModal(false);
                   }}
                 >
-                  <Text style={[
-                    styles.optionText,
-                    option.value === value && styles.optionTextSelected,
-                  ]}>
+                  <Text
+                    style={[
+                      styles.optionText,
+                      option.value === value && styles.optionTextSelected,
+                    ]}
+                  >
                     {option.label}
                   </Text>
                   {option.value === value && (

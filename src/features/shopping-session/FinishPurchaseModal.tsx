@@ -1,14 +1,13 @@
-import { View, Text, StyleSheet } from "react-native";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { ModalWrapper, Button } from "@/components/ui";
-import { formatBRL } from "@/utils/currency";
-import { PurchaseStackParamList } from "@/core/navigation/types";
-
-type RouteProps = PurchaseStackParamList["FinishPurchase"];
+import { View, Text, StyleSheet } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { RouteProp } from '@react-navigation/native';
+import { ModalWrapper, Button } from '@/components/ui';
+import { formatBRL } from '@/utils/currency';
+import { AppStackParamList } from '@/core/navigation/types';
 
 export function FinishPurchaseModal() {
   const navigation = useNavigation();
-  const route = useRoute<RouteProps>();
+  const route = useRoute<RouteProp<AppStackParamList, 'FinishPurchase'>>();
   const { sessionId, totalAmount, purchasedItemIds } = route.params;
 
   const handleFinish = () => {
@@ -51,27 +50,27 @@ const styles = StyleSheet.create({
     gap: 24,
   },
   summary: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingVertical: 8,
   },
   summaryLabel: {
     fontSize: 16,
-    color: "#757575",
+    color: '#757575',
   },
   summaryValue: {
     fontSize: 18,
-    fontWeight: "600",
-    color: "#212121",
+    fontWeight: '600',
+    color: '#212121',
   },
   totalValue: {
-    color: "#2E7D32",
+    color: '#2E7D32',
     fontSize: 22,
-    fontWeight: "700",
+    fontWeight: '700',
   },
   buttonRow: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 12,
     marginTop: 8,
   },

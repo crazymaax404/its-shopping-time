@@ -1,0 +1,11 @@
+node_modules
+.expo
+android
+ios
+assets
+*.png
+*.jpg
+*.jpeg
+yarn.lock
+package-lock.json
+plan.md

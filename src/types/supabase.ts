@@ -13,7 +13,15 @@ export interface Database {
         Row: {
           id: string;
           name: string;
-          category: 'Alimentos' | 'Bebidas' | 'Limpeza' | 'Higiene' | 'Pet' | 'Casa' | 'Farmácia' | 'Outros';
+          category:
+            | 'Alimentos'
+            | 'Bebidas'
+            | 'Limpeza'
+            | 'Higiene'
+            | 'Pet'
+            | 'Casa'
+            | 'Farmácia'
+            | 'Outros';
           default_unit: string;
           default_quantity: number;
           notes: string | null;
@@ -23,7 +31,15 @@ export interface Database {
         Insert: {
           id?: string;
           name: string;
-          category: 'Alimentos' | 'Bebidas' | 'Limpeza' | 'Higiene' | 'Pet' | 'Casa' | 'Farmácia' | 'Outros';
+          category:
+            | 'Alimentos'
+            | 'Bebidas'
+            | 'Limpeza'
+            | 'Higiene'
+            | 'Pet'
+            | 'Casa'
+            | 'Farmácia'
+            | 'Outros';
           default_unit: string;
           default_quantity?: number;
           notes?: string | null;
@@ -33,7 +49,15 @@ export interface Database {
         Update: {
           id?: string;
           name?: string;
-          category?: 'Alimentos' | 'Bebidas' | 'Limpeza' | 'Higiene' | 'Pet' | 'Casa' | 'Farmácia' | 'Outros';
+          category?:
+            | 'Alimentos'
+            | 'Bebidas'
+            | 'Limpeza'
+            | 'Higiene'
+            | 'Pet'
+            | 'Casa'
+            | 'Farmácia'
+            | 'Outros';
           default_unit?: string;
           default_quantity?: number;
           notes?: string | null;
@@ -49,7 +73,15 @@ export interface Database {
           quantity: number;
           unit: string;
           estimated_price: number | null;
-          category: 'Alimentos' | 'Bebidas' | 'Limpeza' | 'Higiene' | 'Pet' | 'Casa' | 'Farmácia' | 'Outros';
+          category:
+            | 'Alimentos'
+            | 'Bebidas'
+            | 'Limpeza'
+            | 'Higiene'
+            | 'Pet'
+            | 'Casa'
+            | 'Farmácia'
+            | 'Outros';
           notes: string | null;
           created_at: string;
           updated_at: string;
@@ -61,7 +93,15 @@ export interface Database {
           quantity?: number;
           unit: string;
           estimated_price?: number | null;
-          category: 'Alimentos' | 'Bebidas' | 'Limpeza' | 'Higiene' | 'Pet' | 'Casa' | 'Farmácia' | 'Outros';
+          category:
+            | 'Alimentos'
+            | 'Bebidas'
+            | 'Limpeza'
+            | 'Higiene'
+            | 'Pet'
+            | 'Casa'
+            | 'Farmácia'
+            | 'Outros';
           notes?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -73,7 +113,15 @@ export interface Database {
           quantity?: number;
           unit?: string;
           estimated_price?: number | null;
-          category?: 'Alimentos' | 'Bebidas' | 'Limpeza' | 'Higiene' | 'Pet' | 'Casa' | 'Farmácia' | 'Outros';
+          category?:
+            | 'Alimentos'
+            | 'Bebidas'
+            | 'Limpeza'
+            | 'Higiene'
+            | 'Pet'
+            | 'Casa'
+            | 'Farmácia'
+            | 'Outros';
           notes?: string | null;
           created_at?: string;
           updated_at?: string;
@@ -155,19 +203,36 @@ export type Product = Database['public']['Tables']['products']['Row'];
 export type ProductInsert = Database['public']['Tables']['products']['Insert'];
 export type ProductUpdate = Database['public']['Tables']['products']['Update'];
 
-export type ShoppingListItem = Database['public']['Tables']['shopping_list_items']['Row'];
-export type ShoppingListItemInsert = Database['public']['Tables']['shopping_list_items']['Insert'];
-export type ShoppingListItemUpdate = Database['public']['Tables']['shopping_list_items']['Update'];
+export type ShoppingListItem =
+  Database['public']['Tables']['shopping_list_items']['Row'];
+export type ShoppingListItemInsert =
+  Database['public']['Tables']['shopping_list_items']['Insert'];
+export type ShoppingListItemUpdate =
+  Database['public']['Tables']['shopping_list_items']['Update'];
 
-export type ShoppingSession = Database['public']['Tables']['shopping_sessions']['Row'];
-export type ShoppingSessionInsert = Database['public']['Tables']['shopping_sessions']['Insert'];
-export type ShoppingSessionUpdate = Database['public']['Tables']['shopping_sessions']['Update'];
+export type ShoppingSession =
+  Database['public']['Tables']['shopping_sessions']['Row'];
+export type ShoppingSessionInsert =
+  Database['public']['Tables']['shopping_sessions']['Insert'];
+export type ShoppingSessionUpdate =
+  Database['public']['Tables']['shopping_sessions']['Update'];
 
-export type ShoppingItem = Database['public']['Tables']['shopping_items']['Row'];
-export type ShoppingItemInsert = Database['public']['Tables']['shopping_items']['Insert'];
-export type ShoppingItemUpdate = Database['public']['Tables']['shopping_items']['Update'];
+export type ShoppingItem =
+  Database['public']['Tables']['shopping_items']['Row'];
+export type ShoppingItemInsert =
+  Database['public']['Tables']['shopping_items']['Insert'];
+export type ShoppingItemUpdate =
+  Database['public']['Tables']['shopping_items']['Update'];
 
-export type Category = 'Alimentos' | 'Bebidas' | 'Limpeza' | 'Higiene' | 'Pet' | 'Casa' | 'Farmácia' | 'Outros';
+export type Category =
+  | 'Alimentos'
+  | 'Bebidas'
+  | 'Limpeza'
+  | 'Higiene'
+  | 'Pet'
+  | 'Casa'
+  | 'Farmácia'
+  | 'Outros';
 
 export const CATEGORIES: Category[] = [
   'Alimentos',
@@ -193,4 +258,4 @@ export const UNITS = [
   'outro',
 ] as const;
 
-export type Unit = typeof UNITS[number];
+export type Unit = (typeof UNITS)[number];

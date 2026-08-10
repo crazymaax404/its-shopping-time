@@ -23,7 +23,8 @@ export const productKeys = {
 export const shoppingListKeys = {
   all: ['shoppingList'] as const,
   lists: () => [...shoppingListKeys.all, 'list'] as const,
-  list: (filters: string) => [...shoppingListKeys.lists(), { filters }] as const,
+  list: (filters: string) =>
+    [...shoppingListKeys.lists(), { filters }] as const,
 };
 
 export const sessionKeys = {
@@ -38,7 +39,8 @@ export const sessionKeys = {
 export const sessionItemsKeys = {
   all: ['sessionItems'] as const,
   lists: () => [...sessionItemsKeys.all, 'list'] as const,
-  list: (sessionId: string) => [...sessionItemsKeys.lists(), sessionId] as const,
+  list: (sessionId: string) =>
+    [...sessionItemsKeys.lists(), sessionId] as const,
 };
 
 export async function fetchProducts(): Promise<Product[]> {
@@ -82,7 +84,9 @@ export async function fetchActiveSession(): Promise<ShoppingSession | null> {
   return data;
 }
 
-export async function fetchSessionDetail(sessionId: string): Promise<ShoppingSession | null> {
+export async function fetchSessionDetail(
+  sessionId: string,
+): Promise<ShoppingSession | null> {
   const { data, error } = await supabase
     .from('shopping_sessions')
     .select('*')
@@ -92,7 +96,9 @@ export async function fetchSessionDetail(sessionId: string): Promise<ShoppingSes
   return data;
 }
 
-export async function fetchSessionItems(sessionId: string): Promise<ShoppingItem[]> {
+export async function fetchSessionItems(
+  sessionId: string,
+): Promise<ShoppingItem[]> {
   const { data, error } = await supabase
     .from('shopping_items')
     .select('*')
@@ -112,7 +118,9 @@ export async function insertProduct(product: ProductInsert): Promise<Product> {
   return data;
 }
 
-export async function insertShoppingListItem(item: ShoppingListItemInsert): Promise<ShoppingListItem> {
+export async function insertShoppingListItem(
+  item: ShoppingListItemInsert,
+): Promise<ShoppingListItem> {
   const { data, error } = await supabase
     .from('shopping_list_items')
     .insert(item)
@@ -122,7 +130,10 @@ export async function insertShoppingListItem(item: ShoppingListItemInsert): Prom
   return data;
 }
 
-export async function updateShoppingListItem(id: string, updates: ShoppingListItemUpdate): Promise<ShoppingListItem> {
+export async function updateShoppingListItem(
+  id: string,
+  updates: ShoppingListItemUpdate,
+): Promise<ShoppingListItem> {
   const { data, error } = await supabase
     .from('shopping_list_items')
     .update({ ...updates, updated_at: new Date().toISOString() })
@@ -141,7 +152,9 @@ export async function deleteShoppingListItem(id: string): Promise<void> {
   if (error) throw error;
 }
 
-export async function insertShoppingSession(session: ShoppingSessionInsert): Promise<ShoppingSession> {
+export async function insertShoppingSession(
+  session: ShoppingSessionInsert,
+): Promise<ShoppingSession> {
   const { data, error } = await supabase
     .from('shopping_sessions')
     .insert(session)
@@ -151,7 +164,10 @@ export async function insertShoppingSession(session: ShoppingSessionInsert): Pro
   return data;
 }
 
-export async function updateShoppingSession(id: string, updates: ShoppingSessionUpdate): Promise<ShoppingSession> {
+export async function updateShoppingSession(
+  id: string,
+  updates: ShoppingSessionUpdate,
+): Promise<ShoppingSession> {
   const { data, error } = await supabase
     .from('shopping_sessions')
     .update(updates)
@@ -162,7 +178,9 @@ export async function updateShoppingSession(id: string, updates: ShoppingSession
   return data;
 }
 
-export async function insertShoppingItems(items: ShoppingItemInsert[]): Promise<ShoppingItem[]> {
+export async function insertShoppingItems(
+  items: ShoppingItemInsert[],
+): Promise<ShoppingItem[]> {
   const { data, error } = await supabase
     .from('shopping_items')
     .insert(items)
@@ -171,7 +189,10 @@ export async function insertShoppingItems(items: ShoppingItemInsert[]): Promise<
   return data ?? [];
 }
 
-export async function updateShoppingItem(id: string, updates: Partial<ShoppingItemInsert>): Promise<ShoppingItem> {
+export async function updateShoppingItem(
+  id: string,
+  updates: Partial<ShoppingItemInsert>,
+): Promise<ShoppingItem> {
   const { data, error } = await supabase
     .from('shopping_items')
     .update(updates)

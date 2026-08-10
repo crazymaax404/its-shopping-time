@@ -1,27 +1,22 @@
-import { AppStack } from "./types";
-import { AppTabNavigator } from "./AppTabs";
-import { PurchaseScreen } from "@/features/shopping-session/PurchaseScreen";
-import { FinishPurchaseModal } from "@/features/shopping-session/FinishPurchaseModal";
-import { HistoryDetailScreen } from "@/features/history/HistoryDetailScreen";
-import { HistoryListScreen } from "@/features/history/HistoryListScreen";
+import { AppStack } from './types';
+import { AppTabNavigator } from './AppTabs';
+import { PurchaseScreen } from '@/features/shopping-session/PurchaseScreen';
+import { FinishPurchaseModal } from '@/features/shopping-session/FinishPurchaseModal';
+import { HistoryDetailScreen } from '@/features/history/HistoryDetailScreen';
+import { HistoryListScreen } from '@/features/history/HistoryListScreen';
 
 export function AppStackNavigator() {
   return (
     <AppStack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: "#fff",
-          elevation: 0,
-          shadowOpacity: 0,
-          borderBottomWidth: 1,
-          borderBottomColor: "#E0E0E0",
+          backgroundColor: '#fff',
         },
         headerTitleStyle: {
-          fontWeight: "600",
-          color: "#212121",
+          fontWeight: '600',
+          color: '#212121',
         },
-        headerTintColor: "#2E7D32",
-        headerBackTitleVisible: false,
+        headerTintColor: '#2E7D32',
       }}
     >
       <AppStack.Screen
@@ -32,22 +27,22 @@ export function AppStackNavigator() {
       <AppStack.Screen
         name="Purchase"
         component={PurchaseScreen}
-        options={{ title: "Compra" }}
+        options={{ title: 'Compra' }}
       />
       <AppStack.Screen
         name="FinishPurchase"
         component={FinishPurchaseModal}
-        options={{ title: "Finalizar", presentation: "modal" }}
+        options={{ title: 'Finalizar', presentation: 'modal' }}
       />
       <AppStack.Screen
         name="HistoryList"
         component={HistoryListScreen}
-        options={{ title: "Histórico" }}
+        options={{ title: 'Histórico' }}
       />
       <AppStack.Screen
         name="HistoryDetail"
         component={HistoryDetailScreen}
-        options={{ title: "Detalhes" }}
+        options={{ title: 'Detalhes' }}
       />
     </AppStack.Navigator>
   );

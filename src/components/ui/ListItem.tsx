@@ -1,13 +1,13 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   TextInput,
-} from "react-native";
-import { ShoppingListItem } from "@/types/supabase";
-import { formatBRL, parseBRL, formatBRLInput } from "@/utils/currency";
+} from 'react-native';
+import { ShoppingListItem } from '@/types/supabase';
+import { formatBRL, parseBRL, formatBRLInput } from '@/utils/currency';
 
 interface ListItemProps {
   item: ShoppingListItem;
@@ -167,113 +167,113 @@ const styles = StyleSheet.create({
   container: {
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderBottomColor: "#F0F0F0",
+    borderBottomColor: '#F0F0F0',
   },
   mainRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   leftSection: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     flex: 1,
     gap: 12,
   },
   checkbox: {
     width: 28,
     height: 28,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   checkboxInner: {
     width: 24,
     height: 24,
     borderWidth: 2,
     borderRadius: 6,
-    borderColor: "#2E7D32",
-    justifyContent: "center",
-    alignItems: "center",
+    borderColor: '#2E7D32',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   checkboxChecked: {
-    backgroundColor: "#2E7D32",
-    borderColor: "#2E7D32",
+    backgroundColor: '#2E7D32',
+    borderColor: '#2E7D32',
   },
   checkboxEmpty: {
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
   },
   checkmark: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
   info: {
     flex: 1,
   },
   name: {
     fontSize: 16,
-    fontWeight: "500",
-    color: "#212121",
+    fontWeight: '500',
+    color: '#212121',
   },
   detailsRow: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginTop: 2,
     gap: 4,
   },
   detail: {
     fontSize: 13,
-    color: "#757575",
+    color: '#757575',
   },
   separator: {
-    color: "#BDBDBD",
+    color: '#BDBDBD',
   },
   note: {
     fontSize: 13,
-    color: "#9E9E9E",
-    fontStyle: "italic",
+    color: '#9E9E9E',
+    fontStyle: 'italic',
   },
   rightSection: {
-    alignItems: "flex-end",
+    alignItems: 'flex-end',
     gap: 8,
   },
   estimatedPrice: {
     fontSize: 15,
-    fontWeight: "600",
-    color: "#2E7D32",
+    fontWeight: '600',
+    color: '#2E7D32',
   },
   purchaseInputs: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
   qtyInput: {
     width: 50,
     height: 36,
     borderWidth: 1,
-    borderColor: "#E0E0E0",
+    borderColor: '#E0E0E0',
     borderRadius: 8,
-    textAlign: "center",
+    textAlign: 'center',
     fontSize: 15,
-    backgroundColor: "#FAFAFA",
+    backgroundColor: '#FAFAFA',
   },
   priceInput: {
     width: 80,
     height: 36,
     borderWidth: 1,
-    borderColor: "#E0E0E0",
+    borderColor: '#E0E0E0',
     borderRadius: 8,
     paddingHorizontal: 8,
     fontSize: 15,
-    backgroundColor: "#FAFAFA",
+    backgroundColor: '#FAFAFA',
   },
   totalPrice: {
     marginTop: 8,
     fontSize: 13,
-    fontWeight: "600",
-    color: "#2E7D32",
-    textAlign: "right",
+    fontWeight: '600',
+    color: '#2E7D32',
+    textAlign: 'right',
   },
 });

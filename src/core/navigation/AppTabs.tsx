@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppTab, AppTabParamList } from './types';
+import { AppTab } from './types';
 import { HomeScreen } from '@/features/shopping-list/HomeScreen';
 import { HistoryListScreen } from '@/features/history/HistoryListScreen';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,7 +9,7 @@ export function AppTabNavigator() {
     <AppTab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
-          let iconName: string;
+          let iconName: keyof typeof Ionicons.glyphMap;
           if (route.name === 'Home') {
             iconName = focused ? 'cart' : 'cart-outline';
           } else if (route.name === 'History') {

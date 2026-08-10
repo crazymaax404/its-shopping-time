@@ -33,12 +33,16 @@ export function Button({
 
   const variantStyles = {
     primary: { backgroundColor: '#2E7D32' },
-    secondary: { backgroundColor: '#E8F5E9', borderWidth: 1, borderColor: '#2E7D32' },
+    secondary: {
+      backgroundColor: '#E8F5E9',
+      borderWidth: 1,
+      borderColor: '#2E7D32',
+    },
     danger: { backgroundColor: '#C62828' },
     ghost: { backgroundColor: 'transparent' },
   };
 
-  const textStyles = {
+  const textStyles: Record<string, { color: string; fontWeight: '600' }> = {
     primary: { color: '#fff', fontWeight: '600' },
     secondary: { color: '#2E7D32', fontWeight: '600' },
     danger: { color: '#fff', fontWeight: '600' },
@@ -49,14 +53,20 @@ export function Button({
 
   return (
     <TouchableOpacity
-      style={[baseStyle, variantStyles[variant], isDisabled && { opacity: 0.6 }]}
+      style={[
+        baseStyle,
+        variantStyles[variant],
+        isDisabled && { opacity: 0.6 },
+      ]}
       onPress={onPress}
       disabled={isDisabled}
       activeOpacity={0.8}
     >
       {loading ? (
         <View style={{ width: 20, height: 20 }}>
-          <Text style={{ color: variant === 'ghost' ? '#2E7D32' : '#fff' }}>⏳</Text>
+          <Text style={{ color: variant === 'ghost' ? '#2E7D32' : '#fff' }}>
+            ⏳
+          </Text>
         </View>
       ) : (
         <Text style={[textStyles[variant], { fontSize: 16 }]}>{title}</Text>

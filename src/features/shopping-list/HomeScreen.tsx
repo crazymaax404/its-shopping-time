@@ -1,18 +1,18 @@
-import { useMemo } from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { useMemo } from 'react';
+import { View, Text, StyleSheet, Alert, SectionList } from 'react-native';
 import {
   useShoppingList,
   useDeleteListItem,
   useUpdateListItem,
-} from "@/services/supabase/hooks";
-import { useStartPurchase } from "@/services/supabase/hooks";
-import { useUIStore } from "@/stores/uiStore";
-import { AddItemModal } from "./AddItemModal";
-import { EditItemModal } from "./EditItemModal";
-import { ListItem, Button } from "@/components/ui";
-import { formatBRL } from "@/utils/currency";
-import { CATEGORIES, ShoppingListItem } from "@/types/supabase";
-import { useNavigation } from "@react-navigation/native";
+} from '@/services/supabase/hooks';
+import { useStartPurchase } from '@/services/supabase/hooks';
+import { useUIStore } from '@/stores/uiStore';
+import { AddItemModal } from './AddItemModal';
+import { EditItemModal } from './EditItemModal';
+import { ListItem, Button } from '@/components/ui';
+import { formatBRL } from '@/utils/currency';
+import { CATEGORIES, ShoppingListItem } from '@/types/supabase';
+import { useNavigation } from '@react-navigation/native';
 
 export function HomeScreen() {
   const navigation = useNavigation<any>();
@@ -33,9 +33,9 @@ export function HomeScreen() {
     const validItems = list.filter(
       (item): item is ShoppingListItem =>
         !!item &&
-        typeof item === "object" &&
-        typeof item.id === "string" &&
-        typeof item.category === "string" &&
+        typeof item === 'object' &&
+        typeof item.id === 'string' &&
+        typeof item.category === 'string' &&
         item.category.length > 0,
     );
     const groups: Record<string, ShoppingListItem[]> = {};
@@ -47,12 +47,6 @@ export function HomeScreen() {
       (cat) =>
         groups[cat] && Array.isArray(groups[cat]) && groups[cat].length > 0,
     ).map((cat) => ({ title: cat, data: groups[cat]!.filter(Boolean) }));
-    console.log(
-      "[HomeScreen] groupedItems:",
-      JSON.stringify(
-        result.map((s) => ({ category: s.title, count: s.data.length })),
-      ),
-    );
     return result;
   }, [list]);
 
@@ -73,23 +67,23 @@ export function HomeScreen() {
   };
 
   const handleLongPress = (item: any) => {
-    Alert.alert(item.name, "O que deseja fazer?", [
-      { text: "Editar", onPress: () => setShowEditModal(true, item.id) },
+    Alert.alert(item.name, 'O que deseja fazer?', [
+      { text: 'Editar', onPress: () => setShowEditModal(true, item.id) },
       {
-        text: "Remover",
-        style: "destructive",
+        text: 'Remover',
+        style: 'destructive',
         onPress: () => handleDelete(item.id),
       },
-      { text: "Cancelar", style: "cancel" },
+      { text: 'Cancelar', style: 'cancel' },
     ]);
   };
 
   const handleDelete = (id: string) => {
-    Alert.alert("Remover item", "Tem certeza?", [
-      { text: "Cancelar", style: "cancel" },
+    Alert.alert('Remover item', 'Tem certeza?', [
+      { text: 'Cancelar', style: 'cancel' },
       {
-        text: "Remover",
-        style: "destructive",
+        text: 'Remover',
+        style: 'destructive',
         onPress: () => deleteItem.mutate(id),
       },
     ]);
@@ -97,18 +91,18 @@ export function HomeScreen() {
 
   const handleStartPurchase = async () => {
     if (!list || list.length === 0) {
-      Alert.alert("Lista vazia", "Adicione itens antes de iniciar a compra");
+      Alert.alert('Lista vazia', 'Adicione itens antes de iniciar a compra');
       return;
     }
     try {
       await startPurchase.mutateAsync(list);
     } catch (err: any) {
-      Alert.alert("Erro", err.message || "Erro ao iniciar compra");
+      Alert.alert('Erro', err.message || 'Erro ao iniciar compra');
     }
   };
 
   const handleNavigateToHistory = () => {
-    navigation.navigate("HistoryList");
+    navigation.navigate('HistoryList');
   };
 
   const renderItem = ({ item }: { item: any }) => (
@@ -142,7 +136,7 @@ export function HomeScreen() {
         <View>
           <Text style={styles.title}>🛒 Lista de compras</Text>
           <Text style={styles.subtitle}>
-            {totalItems} {totalItems === 1 ? "item" : "itens"}
+            {totalItems} {totalItems === 1 ? 'item' : 'itens'}
           </Text>
         </View>
       </View>
@@ -150,7 +144,7 @@ export function HomeScreen() {
       {totalItems > 0 && groupedItems.length > 0 ? (
         <SectionList
           sections={groupedItems.filter(
-            (s) => s && Array.isArray(s.items) && s.items.length > 0,
+            (s) => s && Array.isArray(s.data) && s.data.length > 0,
           )}
           keyExtractor={(item) =>
             item?.id ?? Math.random().toString(36).substr(2, 9)
@@ -175,7 +169,7 @@ export function HomeScreen() {
       <View style={styles.footer}>
         {estimatedTotal > 0 && (
           <Text style={styles.totalLabel}>
-            Total estimado:{" "}
+            Total estimado:{' '}
             <Text style={styles.totalValue}>{formatBRL(estimatedTotal)}</Text>
           </Text>
         )}
@@ -222,23 +216,23 @@ export function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   header: {
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 8,
     borderBottomWidth: 1,
-    borderBottomColor: "#F0F0F0",
+    borderBottomColor: '#F0F0F0',
   },
   title: {
     fontSize: 22,
-    fontWeight: "700",
-    color: "#212121",
+    fontWeight: '700',
+    color: '#212121',
   },
   subtitle: {
     fontSize: 14,
-    color: "#757575",
+    color: '#757575',
     marginTop: 2,
   },
   listContent: {
@@ -248,28 +242,28 @@ const styles = StyleSheet.create({
     height: 100,
   },
   sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 8,
     marginTop: 8,
   },
   sectionTitle: {
     fontSize: 13,
-    fontWeight: "600",
-    color: "#2E7D32",
-    textTransform: "uppercase",
+    fontWeight: '600',
+    color: '#2E7D32',
+    textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
   sectionCount: {
     fontSize: 12,
-    color: "#9E9E9E",
+    color: '#9E9E9E',
   },
   emptyState: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 32,
   },
   emptyIcon: {
@@ -278,40 +272,40 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: 20,
-    fontWeight: "600",
-    color: "#212121",
+    fontWeight: '600',
+    color: '#212121',
     marginBottom: 8,
   },
   emptySubtitle: {
     fontSize: 14,
-    color: "#9E9E9E",
-    textAlign: "center",
+    color: '#9E9E9E',
+    textAlign: 'center',
   },
   footer: {
-    position: "absolute",
+    position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     paddingHorizontal: 16,
     paddingBottom: 24,
     paddingTop: 16,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderTopWidth: 1,
-    borderTopColor: "#F0F0F0",
+    borderTopColor: '#F0F0F0',
     gap: 12,
   },
   totalLabel: {
     fontSize: 16,
-    color: "#424242",
-    textAlign: "center",
+    color: '#424242',
+    textAlign: 'center',
   },
   totalValue: {
-    fontWeight: "700",
-    color: "#2E7D32",
+    fontWeight: '700',
+    color: '#2E7D32',
     fontSize: 18,
   },
   buttonGroup: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 12,
   },
   mainButton: {
@@ -325,11 +319,11 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   loadingText: {
     fontSize: 16,
-    color: "#757575",
+    color: '#757575',
   },
 });

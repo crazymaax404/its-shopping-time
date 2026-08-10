@@ -1,6 +1,12 @@
 import React, { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { ModalWrapper, Input, Select, Button, CurrencyInput } from '@/components/ui';
+import {
+  ModalWrapper,
+  Input,
+  Select,
+  Button,
+  CurrencyInput,
+} from '@/components/ui';
 import { useUIStore } from '@/stores/uiStore';
 import { useUpdateListItem, useShoppingList } from '@/services/supabase/hooks';
 import { CATEGORIES, UNITS, Category, Unit } from '@/types/supabase';
@@ -123,11 +129,7 @@ export function EditItemModal({ visible, onClose }: EditItemModalProps) {
         />
 
         <View style={styles.buttonRow}>
-          <Button
-            title="Cancelar"
-            variant="ghost"
-            onPress={onClose}
-          />
+          <Button title="Cancelar" variant="ghost" onPress={onClose} />
           <Button
             title="Salvar"
             variant="primary"

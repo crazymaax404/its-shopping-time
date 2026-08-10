@@ -10,7 +10,7 @@ import {
   Platform,
   ActivityIndicator,
 } from 'react-native';
-import { useAuth } from './useAuth';
+import { useAuth } from '@/core/providers/AuthProvider';
 
 export function LoginScreen() {
   const { signIn, loading: authLoading } = useAuth();
@@ -56,9 +56,9 @@ export function LoginScreen() {
           onChangeText={setEmail}
           keyboardType="email-address"
           autoCapitalize="none"
-          autoCompleteType="email"
+          autoComplete="email"
           textContentType="emailAddress"
-          disabled={loading}
+          editable={!loading}
         />
 
         <TextInput
@@ -67,12 +67,16 @@ export function LoginScreen() {
           value={password}
           onChangeText={setPassword}
           secureTextEntry
-          autoCompleteType="password"
+          autoComplete="password"
           textContentType="password"
-          disabled={loading}
+          editable={!loading}
         />
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handleLogin}
+          disabled={loading}
+        >
           {loading ? (
             <ActivityIndicator color="#fff" size="small" />
           ) : (

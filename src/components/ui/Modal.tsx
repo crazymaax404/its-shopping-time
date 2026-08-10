@@ -1,5 +1,14 @@
 import React from 'react';
-import { View, Modal, StyleSheet, TouchableOpacity, Text, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import {
+  View,
+  Modal,
+  StyleSheet,
+  TouchableOpacity,
+  Text,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 interface ModalProps {
@@ -18,7 +27,11 @@ export function ModalWrapper({
   style,
 }: ModalProps) {
   return (
-    <Modal visible={visible} animationType="slide" presentationStyle="pageSheet">
+    <Modal
+      visible={visible}
+      animationType="slide"
+      presentationStyle="pageSheet"
+    >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
@@ -30,7 +43,10 @@ export function ModalWrapper({
             <Ionicons name="close" size={28} color="#212121" />
           </TouchableOpacity>
         </View>
-        <ScrollView style={styles.content} contentContainerStyle={styles.contentContainer}>
+        <ScrollView
+          style={styles.content}
+          contentContainerStyle={styles.contentContainer}
+        >
           {children}
         </ScrollView>
       </KeyboardAvoidingView>

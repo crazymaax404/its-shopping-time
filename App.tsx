@@ -1,11 +1,11 @@
-import { StatusBar } from "expo-status-bar";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { NavigationContainer } from "@react-navigation/native";
-import { AuthProvider } from "@/core/providers/AuthProvider";
-import { QueryProvider } from "@/core/providers/QueryProvider";
-import { RealtimeProvider } from "@/core/providers/RealtimeProvider";
-import { RootNavigator } from "@/core/navigation/RootNavigator";
+import { StatusBar } from 'expo-status-bar';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { NavigationContainer } from '@react-navigation/native';
+import { AuthProvider } from '@/core/providers/AuthProvider';
+import { QueryProvider } from '@/core/providers/QueryProvider';
+import { RealtimeProvider } from '@/core/providers/RealtimeProvider';
+import { RootNavigator } from '@/core/navigation/RootNavigator';
 
 export default function App() {
   return (
@@ -20,7 +20,7 @@ export default function App() {
             </NavigationContainer>
           </AuthProvider>
         </QueryProvider>
-        <StatusBar style="dark" backgroundColor="#fff" />
+        <StatusBar style="dark" />
       </GestureHandlerRootView>
     </SafeAreaProvider>
   );

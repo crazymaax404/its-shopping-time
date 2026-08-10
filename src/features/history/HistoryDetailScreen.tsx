@@ -16,9 +16,11 @@ import {
   useBuyAgain,
 } from '@/services/supabase/hooks';
 import { formatDateTimeBR } from '@/utils/date';
-import { formatBRL as formatBRLCurrency } from '@/utils/currency';
-import { ShoppingSession, ShoppingItem } from '@/types/supabase';
+import { formatBRL } from '@/utils/currency';
+import { AppHeader } from '@/components/ui';
+import { ShoppingItem } from '@/types/supabase';
 import { AppStackParamList } from '@/core/navigation/types';
+import { colors } from '@/theme';
 
 export function HistoryDetailScreen() {
   const navigation = useNavigation<any>();
@@ -39,7 +41,7 @@ export function HistoryDetailScreen() {
           try {
             await buyAgain.mutateAsync(sessionId);
             Alert.alert('Sucesso', 'Itens adicionados à lista!');
-            navigation.goBack();
+            navigation.navigate('AppTabs', { screen: 'Lista' });
           } catch (err: any) {
             Alert.alert('Erro', err.message || 'Erro ao adicionar itens');
           }
@@ -48,11 +50,10 @@ export function HistoryDetailScreen() {
     ]);
   };
 
-  const totalAmount = session?.total_amount ?? 0;
-
   if (sessionLoading || itemsLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={styles.container}>
+        <AppHeader />
         <Text style={styles.loadingText}>Carregando...</Text>
       </View>
     );
@@ -60,75 +61,90 @@ export function HistoryDetailScreen() {
 
   if (!session) {
     return (
-      <View style={styles.errorContainer}>
-        <Text style={styles.errorText}>Compra não encontrada</Text>
+      <View style={styles.container}>
+        <AppHeader />
+        <Text style={styles.loadingText}>Compra não encontrada</Text>
       </View>
     );
   }
+
+  const itemCount = items?.length ?? 0;
 
   const renderItem = ({ item }: { item: ShoppingItem }) => (
     <View style={styles.item}>
       <View style={styles.itemLeft}>
         <Text style={styles.itemName}>{item.name}</Text>
-        <View style={styles.itemDetails}>
-          <Text style={styles.itemDetail}>
-            {item.quantity} {item.unit} · {formatBRLCurrency(item.unit_price)}
-          </Text>
-        </View>
-      </View>
-      <View style={styles.itemRight}>
-        <Text style={styles.itemTotal}>
-          {formatBRLCurrency(item.total_price)}
+        <Text style={styles.itemDetail}>
+          {item.quantity} {item.unit} • {formatBRL(item.unit_price)} /{' '}
+          {item.unit}
         </Text>
       </View>
+      <Text style={styles.itemTotal}>{formatBRL(item.total_price)}</Text>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.headerInfo}>
-          <Text style={styles.headerTitle}>Compra</Text>
-          <Text style={styles.headerDate}>
-            {session.finished_at
-              ? formatDateTimeBR(session.finished_at)
-              : 'Em andamento'}
-          </Text>
-        </View>
-        <View style={styles.headerTotal}>
-          <Text style={styles.headerTotalLabel}>Total</Text>
-          <Text style={styles.headerTotalValue}>
-            {formatBRLCurrency(totalAmount)}
-          </Text>
-        </View>
-      </View>
-
+      <AppHeader />
       <FlatList
         data={items ?? []}
         keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.content}
+        ListHeaderComponent={
+          <View style={styles.headerBlock}>
+            <View style={styles.actions}>
+              <TouchableOpacity
+                style={styles.backBtn}
+                onPress={() => navigation.goBack()}
+                activeOpacity={0.85}
+              >
+                <Ionicons name="arrow-back" size={18} color={colors.text} />
+                <Text style={styles.backText}>Voltar ao Histórico</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.againBtn}
+                onPress={handleBuyAgain}
+                activeOpacity={0.85}
+              >
+                <Ionicons name="refresh" size={16} color="#fff" />
+                <Text style={styles.againText}>Comprar novamente</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.summaryCard}>
+              <View style={styles.summaryTop}>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.summaryLabel}>Compra realizada em</Text>
+                  <Text style={styles.summaryDate}>
+                    {session.finished_at
+                      ? formatDateTimeBR(session.finished_at)
+                      : '—'}
+                  </Text>
+                </View>
+                <View style={styles.statusPill}>
+                  <Text style={styles.statusText}>CONCLUÍDA</Text>
+                </View>
+              </View>
+              <View style={styles.summaryBottom}>
+                <Text style={styles.productsCount}>
+                  {itemCount} produto{itemCount !== 1 ? 's' : ''} comprado
+                  {itemCount !== 1 ? 's' : ''}
+                </Text>
+                <View style={styles.paidBlock}>
+                  <Text style={styles.paidLabel}>TOTAL PAGO</Text>
+                  <Text style={styles.paidValue}>
+                    {formatBRL(session.total_amount)}
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            <Text style={styles.sectionTitle}>ITENS DO CARRINHO</Text>
+          </View>
+        }
         renderItem={renderItem}
-        contentContainerStyle={styles.listContent}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
-        ListFooterComponent={<View style={styles.listFooter} />}
       />
-
-      <View style={styles.footer}>
-        <View style={styles.footerTotal}>
-          <Text style={styles.footerTotalLabel}>Total da compra</Text>
-          <Text style={styles.footerTotalValue}>
-            {formatBRLCurrency(totalAmount)}
-          </Text>
-        </View>
-
-        <TouchableOpacity
-          style={styles.buyAgainButton}
-          onPress={handleBuyAgain}
-          activeOpacity={0.8}
-        >
-          <Ionicons name="refresh" size={20} color="#fff" />
-          <Text style={styles.buyAgainText}>Comprar novamente</Text>
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }
@@ -136,149 +152,147 @@ export function HistoryDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
   },
-  header: {
+  content: {
+    paddingHorizontal: 16,
+    paddingBottom: 32,
+  },
+  headerBlock: {
+    gap: 14,
+    marginBottom: 4,
+  },
+  actions: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  backBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    height: 44,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.background,
+  },
+  backText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: colors.text,
+  },
+  againBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: colors.primary,
+  },
+  againText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#fff',
+  },
+  summaryCard: {
+    backgroundColor: colors.navy,
+    borderRadius: 18,
+    padding: 16,
+    gap: 16,
+  },
+  summaryTop: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 12,
+  },
+  summaryLabel: {
+    color: colors.textOnDarkMuted,
+    fontSize: 12,
+  },
+  summaryDate: {
+    color: colors.textOnDark,
+    fontSize: 20,
+    fontWeight: '800',
+    marginTop: 4,
+  },
+  statusPill: {
+    borderWidth: 1,
+    borderColor: colors.primaryMuted,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
+  },
+  statusText: {
+    color: colors.primaryMuted,
+    fontSize: 11,
+    fontWeight: '800',
+  },
+  summaryBottom: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
-  },
-  headerInfo: {
-    flex: 1,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#212121',
-  },
-  headerDate: {
-    fontSize: 14,
-    color: '#757575',
-    marginTop: 2,
-  },
-  headerTotal: {
     alignItems: 'flex-end',
   },
-  headerTotalLabel: {
-    fontSize: 12,
-    color: '#9E9E9E',
+  productsCount: {
+    color: colors.textOnDarkMuted,
+    fontSize: 13,
   },
-  headerTotalValue: {
-    fontSize: 18,
+  paidBlock: {
+    alignItems: 'flex-end',
+  },
+  paidLabel: {
+    color: colors.primaryMuted,
+    fontSize: 11,
     fontWeight: '700',
-    color: '#2E7D32',
   },
-  listContent: {
-    paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 100,
+  paidValue: {
+    color: colors.primary,
+    fontSize: 26,
+    fontWeight: '800',
+    marginTop: 2,
+  },
+  sectionTitle: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: colors.textMuted,
+    letterSpacing: 0.6,
+    marginTop: 4,
   },
   item: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: 14,
   },
   itemLeft: {
     flex: 1,
+    gap: 2,
+    paddingRight: 12,
   },
   itemName: {
     fontSize: 16,
-    fontWeight: '500',
-    color: '#212121',
-  },
-  itemDetails: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginTop: 2,
-    gap: 8,
+    fontWeight: '600',
+    color: colors.text,
   },
   itemDetail: {
     fontSize: 13,
-    color: '#757575',
-  },
-  itemRight: {
-    alignItems: 'flex-end',
-    marginLeft: 12,
+    color: colors.textSecondary,
   },
   itemTotal: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#212121',
+    fontSize: 16,
+    fontWeight: '700',
+    color: colors.text,
   },
   separator: {
     height: 1,
-    backgroundColor: '#F0F0F0',
-    marginHorizontal: 16,
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    paddingHorizontal: 16,
-    paddingBottom: 24,
-    paddingTop: 16,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#F0F0F0',
-    gap: 12,
-  },
-  footerTotal: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 4,
-  },
-  footerTotalLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#424242',
-  },
-  footerTotalValue: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#2E7D32',
-  },
-  buyAgainButton: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 8,
-    height: 52,
-    borderRadius: 10,
-    backgroundColor: '#2E7D32',
-  },
-  buyAgainText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  listFooter: {
-    height: 20,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: colors.borderLight,
   },
   loadingText: {
-    fontSize: 16,
-    color: '#757575',
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 32,
-  },
-  errorText: {
-    fontSize: 18,
-    color: '#757575',
+    marginTop: 40,
+    textAlign: 'center',
+    color: colors.textSecondary,
   },
 });

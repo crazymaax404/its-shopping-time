@@ -284,10 +284,10 @@ const styles = StyleSheet.create({
   },
   suggestionsLabel: {
     fontSize: 13,
-    color: '#757575',
+    color: '#64748B',
   },
   suggestionChip: {
-    backgroundColor: '#E8F5E9',
+    backgroundColor: '#DBEAFE',
     borderRadius: 20,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -296,11 +296,11 @@ const styles = StyleSheet.create({
   suggestionChipText: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#2E7D32',
+    color: '#2563EB',
   },
   suggestionChipDetail: {
     fontSize: 12,
-    color: '#4CAF50',
+    color: '#3B82F6',
   },
   buttonRow: {
     flexDirection: 'row',

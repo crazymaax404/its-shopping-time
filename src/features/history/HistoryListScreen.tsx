@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -9,113 +9,73 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useCompletedSessions } from '@/services/supabase/hooks';
-import {
-  formatDateBR,
-  formatMonthYearBR,
-  groupByMonth,
-  getMonthOrder,
-} from '@/utils/date';
+import { formatDateTimeBR } from '@/utils/date';
 import { formatBRL } from '@/utils/currency';
+import { AppHeader } from '@/components/ui';
 import { ShoppingSession } from '@/types/supabase';
+import { colors } from '@/theme';
 
 export function HistoryListScreen() {
   const navigation = useNavigation<any>();
-  const { data: sessions, isLoading, refetch } = useCompletedSessions();
-
-  const grouped = useMemo((): Array<{
-    month: string;
-    sessions: ShoppingSession[];
-  }> => {
-    if (!sessions) return [];
-    const groups = groupByMonth(sessions);
-    return Object.entries(groups)
-      .sort(([a], [b]) => getMonthOrder(b) - getMonthOrder(a))
-      .map(([month, items]) => ({
-        month,
-        sessions: items as ShoppingSession[],
-      }));
-  }, [sessions]);
+  const { data: sessions, isLoading } = useCompletedSessions();
 
   const renderItem = ({ item }: { item: ShoppingSession }) => (
     <TouchableOpacity
-      style={styles.item}
+      style={styles.card}
       onPress={() =>
         navigation.navigate('HistoryDetail', { sessionId: item.id })
       }
+      activeOpacity={0.85}
     >
-      <View style={styles.itemLeft}>
-        <Text style={styles.itemDate}>{formatDateBR(item.finished_at!)}</Text>
-        <Text style={styles.itemSubtitle}>
-          {item.total_amount > 0 && `${formatBRL(item.total_amount)}  ·  `}
-          {/* item count would need a separate query or we can add a count field */}
-        </Text>
+      <View style={styles.iconBox}>
+        <Ionicons name="calendar" size={20} color={colors.primary} />
       </View>
-      <Ionicons name="chevron-forward" size={24} color="#BDBDBD" />
+      <View style={styles.cardInfo}>
+        <Text style={styles.date}>
+          {item.finished_at ? formatDateTimeBR(item.finished_at) : '—'}
+        </Text>
+        <Text style={styles.subtitle}>Compra concluída</Text>
+      </View>
+      <View style={styles.totalBlock}>
+        <Text style={styles.totalLabel}>TOTAL</Text>
+        <Text style={styles.totalValue}>{formatBRL(item.total_amount)}</Text>
+      </View>
+      <Ionicons name="chevron-forward" size={18} color={colors.textMuted} />
     </TouchableOpacity>
   );
 
-  const renderSectionHeader = ({
-    section,
-  }: {
-    section: { month: string; sessions: ShoppingSession[] };
-  }) => (
-    <View style={styles.sectionHeader}>
-      <Text style={styles.sectionTitle}>
-        {section.month.charAt(0).toUpperCase() + section.month.slice(1)}
-      </Text>
-      <Text style={styles.sectionCount}>
-        {section.sessions.length} compra
-        {section.sessions.length !== 1 ? 's' : ''}
-      </Text>
-    </View>
-  );
-
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.loadingText}>Carregando histórico...</Text>
-      </View>
-    );
-  }
-
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>📊 Histórico de compras</Text>
-      </View>
-
-      {sessions && sessions.length > 0 ? (
-        <FlatList
-          data={grouped}
-          keyExtractor={(section) => section.month}
-          renderItem={({ item }) => (
-            <View style={styles.section}>
-              <View style={styles.sectionHeader}>
-                <Text style={styles.sectionTitle}>
-                  {item.month.charAt(0).toUpperCase() + item.month.slice(1)}
-                </Text>
-                <Text style={styles.sectionCount}>
-                  {item.sessions.length} compra
-                  {item.sessions.length !== 1 ? 's' : ''}
-                </Text>
-              </View>
-              <FlatList
-                data={item.sessions}
-                keyExtractor={(s) => s.id}
-                renderItem={renderItem}
-              />
-            </View>
-          )}
-          ListFooterComponent={<View style={styles.listFooter} />}
-        />
-      ) : (
-        <View style={styles.emptyState}>
-          <Text style={styles.emptyIcon}>📊</Text>
-          <Text style={styles.emptyTitle}>Nenhuma compra finalizada</Text>
-          <Text style={styles.emptySubtitle}>
-            Suas compras finalizadas aparecerão aqui
+      <AppHeader />
+      <View style={styles.titleRow}>
+        <View style={styles.titleLeft}>
+          <Ionicons name="time" size={22} color={colors.primary} />
+          <Text style={styles.title}>Histórico de Compras</Text>
+        </View>
+        <View style={styles.countBadge}>
+          <Text style={styles.countText}>
+            {sessions?.length ?? 0} REGISTROS
           </Text>
         </View>
+      </View>
+
+      {isLoading ? (
+        <Text style={styles.loadingText}>Carregando histórico...</Text>
+      ) : (
+        <FlatList
+          data={sessions ?? []}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+          contentContainerStyle={styles.listContent}
+          ListEmptyComponent={
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyTitle}>Nenhuma compra finalizada</Text>
+              <Text style={styles.emptySubtitle}>
+                Suas compras finalizadas aparecerão aqui
+              </Text>
+            </View>
+          }
+        />
       )}
     </View>
   );
@@ -124,95 +84,112 @@ export function HistoryListScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
   },
-  header: {
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
+    paddingBottom: 12,
+    gap: 12,
+  },
+  titleLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    flex: 1,
   },
   title: {
-    fontSize: 22,
+    fontSize: 18,
     fontWeight: '700',
-    color: '#212121',
+    color: colors.text,
   },
-  section: {
-    marginBottom: 8,
+  countBadge: {
+    backgroundColor: colors.primarySoft,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 999,
   },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  countText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: colors.primaryDark,
+  },
+  listContent: {
     paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingBottom: 24,
   },
-  sectionTitle: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#2E7D32',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
-  },
-  sectionCount: {
-    fontSize: 12,
-    color: '#9E9E9E',
-  },
-  item: {
+  card: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
+    gap: 12,
+    backgroundColor: colors.background,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: colors.borderLight,
+    padding: 14,
+    marginBottom: 10,
+    shadowColor: '#0F172A',
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 1,
   },
-  itemLeft: {
+  iconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cardInfo: {
     flex: 1,
+    gap: 2,
   },
-  itemDate: {
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#212121',
+  date: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: colors.text,
   },
-  itemSubtitle: {
+  subtitle: {
     fontSize: 13,
-    color: '#757575',
-    marginTop: 2,
+    color: colors.textSecondary,
+  },
+  totalBlock: {
+    alignItems: 'flex-end',
+  },
+  totalLabel: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: colors.textMuted,
+    letterSpacing: 0.4,
+  },
+  totalValue: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: colors.primary,
+    fontVariant: ['tabular-nums'],
   },
   emptyState: {
-    flex: 1,
-    justifyContent: 'center',
+    paddingVertical: 48,
     alignItems: 'center',
-    paddingHorizontal: 32,
-  },
-  emptyIcon: {
-    fontSize: 64,
-    marginBottom: 16,
+    gap: 8,
   },
   emptyTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '600',
-    color: '#212121',
-    marginBottom: 8,
+    color: colors.text,
   },
   emptySubtitle: {
     fontSize: 14,
-    color: '#9E9E9E',
+    color: colors.textSecondary,
     textAlign: 'center',
   },
-  listFooter: {
-    height: 24,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   loadingText: {
-    fontSize: 16,
-    color: '#757575',
+    marginTop: 40,
+    textAlign: 'center',
+    color: colors.textSecondary,
   },
 });

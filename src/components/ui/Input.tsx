@@ -1,5 +1,6 @@
 import React from 'react';
-import { TextInput, View, Text, StyleSheet } from 'react-native';
+import { TextInput, View, Text, StyleSheet, TextInputProps } from 'react-native';
+import { colors } from '@/theme';
 
 interface InputProps {
   label?: string;
@@ -8,7 +9,7 @@ interface InputProps {
   placeholder?: string;
   error?: string;
   disabled?: boolean;
-  keyboardType?: 'default' | 'numeric' | 'email-address' | 'decimal-pad';
+  keyboardType?: TextInputProps['keyboardType'];
   secureTextEntry?: boolean;
   style?: any;
   multiline?: boolean;
@@ -16,6 +17,9 @@ interface InputProps {
   textAlign?: 'left' | 'center' | 'right';
   inputStyle?: any;
   autoFocus?: boolean;
+  dark?: boolean;
+  autoCapitalize?: TextInputProps['autoCapitalize'];
+  autoComplete?: TextInputProps['autoComplete'];
 }
 
 export function Input({
@@ -33,13 +37,19 @@ export function Input({
   textAlign = 'left',
   inputStyle,
   autoFocus = false,
+  dark = false,
+  autoCapitalize,
+  autoComplete,
 }: InputProps) {
   return (
     <View style={[styles.container, style]}>
-      {label && <Text style={styles.label}>{label}</Text>}
+      {label && (
+        <Text style={[styles.label, dark && styles.labelDark]}>{label}</Text>
+      )}
       <TextInput
         style={[
           styles.input,
+          dark && styles.inputDark,
           { textAlign },
           error && styles.inputError,
           disabled && styles.inputDisabled,
@@ -48,7 +58,7 @@ export function Input({
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
-        placeholderTextColor="#9E9E9E"
+        placeholderTextColor={dark ? colors.textOnDarkMuted : colors.textMuted}
         editable={!disabled}
         pointerEvents={disabled ? 'none' : 'auto'}
         keyboardType={keyboardType}
@@ -56,6 +66,8 @@ export function Input({
         multiline={multiline}
         numberOfLines={numberOfLines}
         autoFocus={autoFocus}
+        autoCapitalize={autoCapitalize}
+        autoComplete={autoComplete}
       />
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
@@ -69,27 +81,35 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#424242',
+    color: colors.textSecondary,
+  },
+  labelDark: {
+    color: colors.textOnDark,
   },
   input: {
     height: 48,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 10,
+    borderColor: colors.border,
+    borderRadius: 12,
     paddingHorizontal: 14,
     fontSize: 16,
-    backgroundColor: '#FAFAFA',
-    color: '#212121',
+    backgroundColor: colors.surface,
+    color: colors.text,
+  },
+  inputDark: {
+    backgroundColor: colors.navySoft,
+    borderColor: 'transparent',
+    color: colors.textOnDark,
   },
   inputError: {
-    borderColor: '#C62828',
+    borderColor: colors.danger,
   },
   inputDisabled: {
-    backgroundColor: '#F5F5F5',
-    color: '#9E9E9E',
+    backgroundColor: colors.surfaceAlt,
+    color: colors.textMuted,
   },
   errorText: {
     fontSize: 12,
-    color: '#C62828',
+    color: colors.danger,
   },
 });

@@ -1,279 +1,206 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  TextInput,
-} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { ShoppingListItem } from '@/types/supabase';
-import { formatBRL, parseBRL, formatBRLInput } from '@/utils/currency';
+import { formatBRL } from '@/utils/currency';
+import { colors } from '@/theme';
 
-interface ListItemProps {
+interface ListVariantProps {
+  variant?: 'list';
   item: ShoppingListItem;
-  onToggle: (id: string, purchased: boolean) => void;
-  onPress: (item: ShoppingListItem) => void;
-  onQuantityChange: (id: string, quantity: number) => void;
-  onLongPress?: (item: ShoppingListItem) => void;
-  inPurchaseMode?: boolean;
-  purchasedQuantity?: number;
-  onPurchasedQuantityChange?: (id: string, quantity: number) => void;
-  onPriceChange?: (id: string, priceCents: number) => void;
-  priceCents?: number;
-  showPriceInput?: boolean;
+  checked?: boolean;
+  onToggle?: () => void;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-export function ListItem({
-  item,
-  onToggle,
-  onPress,
-  onQuantityChange,
-  onLongPress,
-  inPurchaseMode = false,
-  purchasedQuantity = 0,
-  onPurchasedQuantityChange,
-  onPriceChange,
-  priceCents = 0,
-  showPriceInput = false,
-}: ListItemProps) {
-  const [localQty, setLocalQty] = React.useState(item.quantity);
-  const [localPurchasedQty, setLocalPurchasedQty] =
-    React.useState(purchasedQuantity);
-  const [localPrice, setLocalPrice] = React.useState(priceCents);
+interface MarketVariantProps {
+  variant: 'market';
+  name: string;
+  quantity: number;
+  unit: string;
+  plannedPriceCents?: number;
+  checked: boolean;
+  paidTotalCents?: number;
+  onToggle: () => void;
+}
 
-  React.useEffect(() => {
-    setLocalQty(item.quantity);
-  }, [item.quantity]);
+type ListItemProps = ListVariantProps | MarketVariantProps;
 
-  React.useEffect(() => {
-    setLocalPurchasedQty(purchasedQuantity);
-  }, [purchasedQuantity]);
+export function ListItem(props: ListItemProps) {
+  if (props.variant === 'market') {
+    const price =
+      props.checked && props.paidTotalCents != null
+        ? props.paidTotalCents
+        : props.plannedPriceCents ?? 0;
 
-  React.useEffect(() => {
-    setLocalPrice(priceCents);
-  }, [priceCents]);
-
-  const handleQtyChange = (value: string) => {
-    const num = parseInt(value) || 0;
-    setLocalQty(num);
-    onQuantityChange(item.id, num);
-  };
-
-  const handlePurchasedQtyChange = (value: string) => {
-    const num = parseInt(value) || 0;
-    setLocalPurchasedQty(num);
-    onPurchasedQuantityChange?.(item.id, num);
-  };
-
-  const handlePriceChange = (value: string) => {
-    const cents = parseBRL(value);
-    setLocalPrice(cents);
-    onPriceChange?.(item.id, cents);
-  };
-
-  const totalPrice = localPurchasedQty * (localPrice || 0);
-
-  return (
-    <TouchableOpacity
-      style={styles.container}
-      onPress={() => !inPurchaseMode && onPress(item)}
-      onLongPress={() => onLongPress?.(item)}
-      activeOpacity={0.9}
-    >
-      <View style={styles.mainRow}>
-        <View style={styles.leftSection}>
-          {inPurchaseMode ? (
-            <TouchableOpacity
-              onPress={() => onToggle(item.id, localPurchasedQty === 0)}
-              style={styles.checkbox}
-            >
-              <View
-                style={[
-                  styles.checkboxInner,
-                  localPurchasedQty > 0 && styles.checkboxChecked,
-                ]}
-              >
-                {localPurchasedQty > 0 && (
-                  <Text style={styles.checkmark}>✓</Text>
-                )}
-              </View>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              onPress={() => onToggle(item.id, false)}
-              style={styles.checkbox}
-            >
-              <View style={[styles.checkboxInner, styles.checkboxEmpty]} />
-            </TouchableOpacity>
+    return (
+      <TouchableOpacity
+        style={styles.marketRow}
+        onPress={props.onToggle}
+        activeOpacity={0.85}
+      >
+        <View
+          style={[styles.checkbox, props.checked && styles.checkboxChecked]}
+        >
+          {props.checked && (
+            <Ionicons name="checkmark" size={16} color="#fff" />
           )}
-          <View style={styles.info}>
-            <Text style={styles.name}>{item.name}</Text>
-            <View style={styles.detailsRow}>
-              <Text style={styles.detail}>
-                {localQty} {item.unit}
+        </View>
+        <View style={styles.marketInfo}>
+          <Text style={styles.name}>{props.name}</Text>
+          <View style={styles.chipRow}>
+            <View style={styles.chip}>
+              <Text style={styles.chipText}>
+                {props.quantity} {props.unit} planejado
               </Text>
-              {item.notes && (
-                <>
-                  <Text style={styles.separator}>·</Text>
-                  <Text style={styles.note}>{item.notes}</Text>
-                </>
-              )}
+            </View>
+            <View style={styles.chip}>
+              <Ionicons
+                name="cash-outline"
+                size={12}
+                color={colors.textSecondary}
+              />
+              <Text style={styles.chipText}>{formatBRL(price)}</Text>
             </View>
           </View>
         </View>
-        <View style={styles.rightSection}>
-          {inPurchaseMode ? (
-            <View style={styles.purchaseInputs}>
-              <TextInput
-                style={styles.qtyInput}
-                value={localPurchasedQty.toString()}
-                onChangeText={handlePurchasedQtyChange}
-                keyboardType="numeric"
-                placeholder="Qtd"
-                textAlign="center"
-                editable={localPurchasedQty > 0}
-              />
-              {showPriceInput && (
-                <TextInput
-                  style={styles.priceInput}
-                  value={formatBRLInput(localPrice)}
-                  onChangeText={handlePriceChange}
-                  keyboardType="decimal-pad"
-                  placeholder="Preço"
-                  textAlign="right"
-                  editable={localPurchasedQty > 0}
-                />
-              )}
-            </View>
-          ) : item.estimated_price ? (
-            <Text style={styles.estimatedPrice}>
-              {formatBRL(item.estimated_price)}
+      </TouchableOpacity>
+    );
+  }
+
+  const { item, checked = false, onToggle, onEdit, onDelete } = props;
+
+  return (
+    <View style={styles.listRow}>
+      <TouchableOpacity
+        style={[styles.checkbox, checked && styles.checkboxChecked]}
+        onPress={onToggle}
+        activeOpacity={0.85}
+      >
+        {checked && <Ionicons name="checkmark" size={16} color="#fff" />}
+      </TouchableOpacity>
+
+      <View style={styles.listInfo}>
+        <View style={styles.nameRow}>
+          <Text style={styles.name}>{item.name}</Text>
+          <View style={styles.qtyBadge}>
+            <Text style={styles.qtyBadgeText}>
+              {item.quantity} {item.unit.toUpperCase()}
             </Text>
-          ) : null}
+          </View>
         </View>
+        <Text style={styles.estPrice}>
+          Est.:{' '}
+          {item.estimated_price != null
+            ? formatBRL(item.estimated_price)
+            : '—'}
+        </Text>
       </View>
 
-      {inPurchaseMode &&
-        localPurchasedQty > 0 &&
-        showPriceInput &&
-        totalPrice > 0 && (
-          <Text style={styles.totalPrice}>Total: {formatBRL(totalPrice)}</Text>
-        )}
-    </TouchableOpacity>
+      <View style={styles.actions}>
+        <TouchableOpacity onPress={onEdit} hitSlop={10}>
+          <Ionicons name="create-outline" size={20} color={colors.textMuted} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={onDelete} hitSlop={10}>
+          <Ionicons name="trash-outline" size={20} color={colors.textMuted} />
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
-  },
-  mainRow: {
+  listRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  leftSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
     gap: 12,
+    paddingVertical: 14,
+    paddingHorizontal: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.borderLight,
+    backgroundColor: colors.background,
+  },
+  marketRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    padding: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.background,
+    marginBottom: 10,
   },
   checkbox: {
     width: 28,
     height: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  checkboxInner: {
-    width: 24,
-    height: 24,
+    borderRadius: 8,
     borderWidth: 2,
-    borderRadius: 6,
-    borderColor: '#2E7D32',
-    justifyContent: 'center',
+    borderColor: colors.border,
     alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.background,
   },
   checkboxChecked: {
-    backgroundColor: '#2E7D32',
-    borderColor: '#2E7D32',
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
-  checkboxEmpty: {
-    backgroundColor: 'transparent',
-  },
-  checkmark: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  info: {
+  listInfo: {
     flex: 1,
+    gap: 4,
+  },
+  marketInfo: {
+    flex: 1,
+    gap: 8,
+  },
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
   },
   name: {
     fontSize: 16,
-    fontWeight: '500',
-    color: '#212121',
-  },
-  detailsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 2,
-    gap: 4,
-  },
-  detail: {
-    fontSize: 13,
-    color: '#757575',
-  },
-  separator: {
-    color: '#BDBDBD',
-  },
-  note: {
-    fontSize: 13,
-    color: '#9E9E9E',
-    fontStyle: 'italic',
-  },
-  rightSection: {
-    alignItems: 'flex-end',
-    gap: 8,
-  },
-  estimatedPrice: {
-    fontSize: 15,
     fontWeight: '600',
-    color: '#2E7D32',
+    color: colors.text,
   },
-  purchaseInputs: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  qtyInput: {
-    width: 50,
-    height: 36,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 8,
-    textAlign: 'center',
-    fontSize: 15,
-    backgroundColor: '#FAFAFA',
-  },
-  priceInput: {
-    width: 80,
-    height: 36,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 8,
+  qtyBadge: {
+    backgroundColor: colors.primarySoft,
     paddingHorizontal: 8,
-    fontSize: 15,
-    backgroundColor: '#FAFAFA',
+    paddingVertical: 3,
+    borderRadius: 8,
   },
-  totalPrice: {
-    marginTop: 8,
+  qtyBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: colors.primaryDark,
+  },
+  estPrice: {
     fontSize: 13,
-    fontWeight: '600',
-    color: '#2E7D32',
-    textAlign: 'right',
+    color: colors.textSecondary,
+  },
+  actions: {
+    flexDirection: 'row',
+    gap: 14,
+  },
+  chipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: colors.surfaceAlt,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 8,
+  },
+  chipText: {
+    fontSize: 12,
+    color: colors.textSecondary,
+    fontWeight: '500',
   },
 });

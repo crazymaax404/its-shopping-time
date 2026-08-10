@@ -1,6 +1,7 @@
 import React from 'react';
 import { TextInput, StyleSheet, Text, View } from 'react-native';
 import { parseBRL, formatBRLInput } from '@/utils/currency';
+import { colors } from '@/theme';
 
 interface CurrencyInputProps {
   label?: string;
@@ -9,6 +10,7 @@ interface CurrencyInputProps {
   placeholder?: string;
   style?: any;
   disabled?: boolean;
+  dark?: boolean;
 }
 
 export function CurrencyInput({
@@ -18,6 +20,7 @@ export function CurrencyInput({
   placeholder = 'R$ 0,00',
   style,
   disabled = false,
+  dark = false,
 }: CurrencyInputProps) {
   const [text, setText] = React.useState(formatBRLInput(value));
 
@@ -40,20 +43,20 @@ export function CurrencyInput({
     }
 
     setText(displayText);
-
-    const cents = parseBRL(displayText);
-    onChange(cents);
+    onChange(parseBRL(displayText));
   };
 
   return (
     <View style={styles.container}>
-      {label && <Text style={styles.label}>{label}</Text>}
+      {label && (
+        <Text style={[styles.label, dark && styles.labelDark]}>{label}</Text>
+      )}
       <TextInput
-        style={[styles.input, style]}
+        style={[styles.input, dark && styles.inputDark, style]}
         value={text}
         onChangeText={handleChange}
         placeholder={placeholder}
-        placeholderTextColor="#9E9E9E"
+        placeholderTextColor={dark ? colors.textOnDarkMuted : colors.textMuted}
         keyboardType="numeric"
         textAlign="right"
         editable={!disabled}
@@ -69,17 +72,25 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#424242',
+    color: colors.textSecondary,
+  },
+  labelDark: {
+    color: colors.textOnDark,
   },
   input: {
     height: 48,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 10,
+    borderColor: colors.border,
+    borderRadius: 12,
     paddingHorizontal: 14,
     fontSize: 18,
     fontFamily: 'monospace',
-    backgroundColor: '#FAFAFA',
-    color: '#212121',
+    backgroundColor: colors.surface,
+    color: colors.text,
+  },
+  inputDark: {
+    backgroundColor: colors.navySoft,
+    borderColor: 'transparent',
+    color: colors.textOnDark,
   },
 });

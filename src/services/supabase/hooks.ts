@@ -217,7 +217,7 @@ export function useStartPurchase() {
         name: item.name,
         quantity: item.quantity,
         unit: item.unit,
-        unit_price: 0,
+        unit_price: item.estimated_price || 0,
         total_price: 0,
         category: item.category,
         notes: item.notes,
@@ -225,8 +225,12 @@ export function useStartPurchase() {
       await insertShoppingItems(sessionItems);
       return session;
     },
-    onSuccess: () => {
+    onSuccess: (session) => {
+      queryClient.setQueryData(sessionKeys.active(), session);
       queryClient.invalidateQueries({ queryKey: sessionKeys.active() });
+      queryClient.invalidateQueries({
+        queryKey: sessionItemsKeys.list(session.id),
+      });
       queryClient.invalidateQueries({ queryKey: shoppingListKeys.lists() });
     },
   });
@@ -286,11 +290,15 @@ export function useFinishPurchase() {
         total_amount: totalAmount,
         status: 'completed',
       });
+      // purchasedItemIds are shopping_items ids — resolve names to clear the list
       if (purchasedItemIds.length > 0) {
-        await supabase
-          .from('shopping_list_items')
-          .delete()
-          .in('id', purchasedItemIds);
+        const sessionItems = await fetchSessionItems(sessionId);
+        const names = sessionItems
+          .filter((item) => purchasedItemIds.includes(item.id))
+          .map((item) => item.name);
+        if (names.length > 0) {
+          await supabase.from('shopping_list_items').delete().in('name', names);
+        }
       }
     },
     onSuccess: () => {

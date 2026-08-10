@@ -11,40 +11,23 @@ export type AuthStackParamList = {
 };
 
 export type AppTabParamList = {
-  Home: undefined;
-  History: undefined;
-};
-
-export type PurchaseStackParamList = {
-  Purchase: { sessionId: string };
-  FinishPurchase: {
-    sessionId: string;
-    totalAmount: number;
-    purchasedItemIds: string[];
-  };
-};
-
-export type HistoryStackParamList = {
-  HistoryList: undefined;
-  HistoryDetail: { sessionId: string };
+  Lista: undefined;
+  Mercado: undefined;
+  Recentes: undefined;
+  Historico: undefined;
 };
 
 export type AppStackParamList = {
-  AppTabs: undefined;
-  Purchase: { sessionId: string };
+  AppTabs: undefined | { screen?: keyof AppTabParamList };
   FinishPurchase: {
     sessionId: string;
     totalAmount: number;
     purchasedItemIds: string[];
   };
-  HistoryList: undefined;
   HistoryDetail: { sessionId: string };
 };
 
 export const RootStack = createNativeStackNavigator<RootStackParamList>();
 export const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 export const AppTab = createBottomTabNavigator<AppTabParamList>();
-export const PurchaseStack =
-  createNativeStackNavigator<PurchaseStackParamList>();
-export const HistoryStack = createNativeStackNavigator<HistoryStackParamList>();
 export const AppStack = createNativeStackNavigator<AppStackParamList>();

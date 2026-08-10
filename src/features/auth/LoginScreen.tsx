@@ -2,18 +2,17 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
-  TouchableOpacity,
   StyleSheet,
-  Alert,
   KeyboardAvoidingView,
   Platform,
-  ActivityIndicator,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/core/providers/AuthProvider';
+import { Button, Input } from '@/components/ui';
+import { colors } from '@/theme';
 
 export function LoginScreen() {
-  const { signIn, loading: authLoading } = useAuth();
+  const { signIn } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -32,8 +31,8 @@ export function LoginScreen() {
 
     if (signInError) {
       setError(signInError.message);
-      setLoading(false);
     }
+    setLoading(false);
   };
 
   return (
@@ -42,47 +41,40 @@ export function LoginScreen() {
       style={styles.container}
     >
       <View style={styles.logoContainer}>
-        <Text style={styles.logoText}>🛒</Text>
+        <View style={styles.logo}>
+          <Ionicons name="bag-handle" size={36} color="#fff" />
+        </View>
         <Text style={styles.appName}>Comprinhas</Text>
       </View>
 
       <View style={styles.formContainer}>
-        <Text style={styles.error}>{error}</Text>
+        {!!error && <Text style={styles.error}>{error}</Text>}
 
-        <TextInput
-          style={styles.input}
-          placeholder="E-mail"
+        <Input
           value={email}
           onChangeText={setEmail}
+          placeholder="E-mail"
           keyboardType="email-address"
           autoCapitalize="none"
           autoComplete="email"
-          textContentType="emailAddress"
-          editable={!loading}
+          disabled={loading}
         />
 
-        <TextInput
-          style={styles.input}
-          placeholder="Senha"
+        <Input
           value={password}
           onChangeText={setPassword}
+          placeholder="Senha"
           secureTextEntry
           autoComplete="password"
-          textContentType="password"
-          editable={!loading}
+          disabled={loading}
         />
 
-        <TouchableOpacity
-          style={styles.button}
+        <Button
+          title="Entrar"
           onPress={handleLogin}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" size="small" />
-          ) : (
-            <Text style={styles.buttonText}>Entrar</Text>
-          )}
-        </TouchableOpacity>
+          loading={loading}
+          style={{ marginTop: 8 }}
+        />
       </View>
 
       <Text style={styles.hint}>
@@ -97,57 +89,39 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     paddingHorizontal: 24,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
   },
   logoContainer: {
     alignItems: 'center',
     marginBottom: 32,
+    gap: 12,
   },
-  logoText: {
-    fontSize: 64,
-    marginBottom: 8,
+  logo: {
+    width: 72,
+    height: 72,
+    borderRadius: 18,
+    backgroundColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   appName: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#2E7D32',
+    color: colors.text,
   },
   formContainer: {
     width: '100%',
-    gap: 16,
-  },
-  input: {
-    height: 52,
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 12,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    backgroundColor: '#FAFAFA',
+    gap: 14,
   },
   error: {
-    color: '#C62828',
+    color: colors.danger,
     fontSize: 14,
     textAlign: 'center',
-    minHeight: 20,
-  },
-  button: {
-    height: 52,
-    borderRadius: 12,
-    backgroundColor: '#2E7D32',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
   },
   hint: {
     marginTop: 24,
     textAlign: 'center',
-    color: '#9E9E9E',
+    color: colors.textMuted,
     fontSize: 12,
   },
 });

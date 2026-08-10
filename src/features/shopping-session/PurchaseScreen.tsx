@@ -1,247 +1,230 @@
-import React, { useState, useMemo } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { RouteProp } from '@react-navigation/native';
+import React, { useMemo, useState, useEffect } from 'react';
+import { View, Text, StyleSheet, FlatList, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import {
   useSessionItems,
   useUpdatePurchaseItem,
-  useFinishPurchase,
   useActiveSession,
 } from '@/services/supabase/hooks';
-import { ListItem, Button } from '@/components/ui';
-import { formatBRL } from '@/utils/currency';
+import { useUIStore } from '@/stores/uiStore';
+import {
+  AppHeader,
+  SummaryCard,
+  ListItem,
+  Button,
+} from '@/components/ui';
+import { RegisterPriceModal } from './RegisterPriceModal';
 import { ShoppingItem } from '@/types/supabase';
-import { AppStackParamList } from '@/core/navigation/types';
+import { colors } from '@/theme';
 
 export function PurchaseScreen() {
   const navigation = useNavigation<any>();
-  const route = useRoute<RouteProp<AppStackParamList, 'Purchase'>>();
-  const sessionId = route.params.sessionId;
+  const { data: session, isLoading: sessionLoading } = useActiveSession();
+  const storedSessionId = useUIStore((s) => s.activeSessionId);
+  const setActiveSessionId = useUIStore((s) => s.setActiveSessionId);
+  const sessionId = session?.id ?? storedSessionId ?? '';
 
-  const { data: session } = useActiveSession();
   const { data: items, isLoading } = useSessionItems(sessionId);
   const updateItem = useUpdatePurchaseItem();
-  const finishPurchase = useFinishPurchase();
 
-  const [purchasedQuantities, setPurchasedQuantities] = useState<
-    Record<string, number>
+  const [purchased, setPurchased] = useState<
+    Record<string, { qty: number; totalCents: number }>
   >({});
-  const [prices, setPrices] = useState<Record<string, number>>({});
+  const [editingItem, setEditingItem] = useState<ShoppingItem | null>(null);
 
-  const totalAmount = useMemo(() => {
-    if (!items) return 0;
-    return items.reduce((sum, item) => {
-      const qty = purchasedQuantities[item.id] || 0;
-      const price = prices[item.id] || 0;
-      return sum + qty * price;
-    }, 0);
-  }, [items, purchasedQuantities, prices]);
-
-  const purchasedItemIds = useMemo(() => {
-    if (!items) return [];
-    return items
-      .filter((item) => (purchasedQuantities[item.id] || 0) > 0)
-      .map((item) => item.id);
-  }, [items, purchasedQuantities]);
-
-  const handlePurchasedQtyChange = (id: string, quantity: number) => {
-    setPurchasedQuantities((prev) => ({ ...prev, [id]: quantity }));
-    updateItem.mutate({
-      id,
-      updates: { quantity },
-    });
-  };
-
-  const handlePriceChange = (id: string, priceCents: number) => {
-    setPrices((prev) => ({ ...prev, [id]: priceCents }));
-    updateItem.mutate({
-      id,
-      updates: {
-        unit_price: priceCents,
-        total_price: priceCents * (purchasedQuantities[id] || 0),
-      },
-    });
-  };
-
-  const handleFinish = async () => {
-    if (purchasedItemIds.length === 0) {
-      Alert.alert(
-        'Nenhum item comprado',
-        'Marque pelo menos um item como comprado',
-      );
-      return;
+  useEffect(() => {
+    if (session?.id) {
+      setActiveSessionId(session.id);
+    } else if (!sessionLoading && session === null && storedSessionId) {
+      // stale persisted id after completed/cancelled session
+      setActiveSessionId(null);
     }
+  }, [session, sessionLoading, storedSessionId, setActiveSessionId]);
 
-    Alert.alert(
-      'Finalizar compra?',
-      `${purchasedItemIds.length} produtos\nTotal: ${formatBRL(totalAmount)}`,
-      [
+  useEffect(() => {
+    if (!items) return;
+    const next: Record<string, { qty: number; totalCents: number }> = {};
+    for (const item of items) {
+      if (item.total_price > 0) {
+        next[item.id] = {
+          qty: item.quantity,
+          totalCents: item.total_price,
+        };
+      }
+    }
+    setPurchased(next);
+  }, [items]);
+
+  const totalPaid = useMemo(() => {
+    return Object.values(purchased).reduce((sum, p) => sum + p.totalCents, 0);
+  }, [purchased]);
+
+  const inCart = Object.keys(purchased).length;
+  const totalItems = items?.length ?? 0;
+
+  const handleToggle = (item: ShoppingItem) => {
+    if (purchased[item.id]) {
+      Alert.alert(item.name, 'Remover do carrinho?', [
         { text: 'Cancelar', style: 'cancel' },
         {
-          text: 'Finalizar',
-          onPress: async () => {
-            try {
-              await finishPurchase.mutateAsync({
-                sessionId,
-                totalAmount,
-                purchasedItemIds,
-              });
-              navigation.navigate('AppTabs', { screen: 'Home' });
-            } catch (err: any) {
-              Alert.alert('Erro', err.message || 'Erro ao finalizar compra');
-            }
+          text: 'Remover',
+          style: 'destructive',
+          onPress: () => {
+            setPurchased((prev) => {
+              const copy = { ...prev };
+              delete copy[item.id];
+              return copy;
+            });
+            updateItem.mutate({
+              id: item.id,
+              updates: { unit_price: 0, total_price: 0 },
+            });
           },
         },
-      ],
-    );
+      ]);
+      return;
+    }
+    setEditingItem(item);
   };
 
-  const renderItem = ({ item }: { item: ShoppingItem }) => (
-    <ListItem
-      item={
-        {
-          ...item,
-          quantity: item.quantity,
-          unit: item.unit,
-          category: item.category,
-          notes: item.notes,
-          estimated_price: item.unit_price,
-        } as any
-      }
-      onToggle={() => {}}
-      onPress={() => {}}
-      onQuantityChange={() => {}}
-      inPurchaseMode={true}
-      purchasedQuantity={purchasedQuantities[item.id] || 0}
-      onPurchasedQuantityChange={handlePurchasedQtyChange}
-      onPriceChange={handlePriceChange}
-      priceCents={prices[item.id] || 0}
-      showPriceInput={true}
-    />
-  );
+  const handleConfirmPrice = (quantity: number, totalCents: number) => {
+    if (!editingItem) return;
+    const unitPrice =
+      quantity > 0 ? Math.round(totalCents / quantity) : 0;
+    setPurchased((prev) => ({
+      ...prev,
+      [editingItem.id]: { qty: quantity, totalCents },
+    }));
+    updateItem.mutate({
+      id: editingItem.id,
+      updates: {
+        quantity,
+        unit_price: unitPrice,
+        total_price: totalCents,
+      },
+    });
+    setEditingItem(null);
+  };
 
-  if (isLoading) {
+  const handleFinish = () => {
+    if (inCart === 0 || !sessionId) return;
+    navigation.navigate('FinishPurchase', {
+      sessionId,
+      totalAmount: totalPaid,
+      purchasedItemIds: Object.keys(purchased),
+    });
+  };
+
+  if (sessionLoading || (sessionId && isLoading)) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={styles.container}>
+        <AppHeader />
         <Text style={styles.loadingText}>Carregando compra...</Text>
       </View>
     );
   }
 
-  return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-      keyboardVerticalOffset={100}
-    >
-      <View style={styles.header}>
-        <Text style={styles.sessionTitle}>Compra em andamento</Text>
-        <Text style={styles.sessionSubtitle}>
-          {items?.length ?? 0} itens na lista
-        </Text>
+  if (!sessionLoading && !sessionId) {
+    return (
+      <View style={styles.container}>
+        <AppHeader />
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyTitle}>Nenhuma compra ativa</Text>
+          <Text style={styles.emptySubtitle}>
+            Comece uma compra na aba Lista para ver os itens aqui
+          </Text>
+          <Button
+            title="Ir para Lista"
+            onPress={() => navigation.navigate('Lista')}
+            style={{ marginTop: 16, maxWidth: 220 }}
+            fullWidth={false}
+          />
+        </View>
       </View>
+    );
+  }
 
+  return (
+    <View style={styles.container}>
+      <AppHeader />
       <FlatList
         data={items ?? []}
         keyExtractor={(item) => item.id}
-        renderItem={renderItem}
         contentContainerStyle={styles.listContent}
-        ListFooterComponent={<View style={styles.listFooter} />}
+        ListHeaderComponent={
+          <SummaryCard
+            variant="market"
+            inCart={inCart}
+            totalItems={totalItems}
+            totalPaid={totalPaid}
+            onBack={() => navigation.navigate('Lista')}
+            onFinish={handleFinish}
+          />
+        }
+        renderItem={({ item }) => (
+          <ListItem
+            variant="market"
+            name={item.name}
+            quantity={item.quantity}
+            unit={item.unit}
+            plannedPriceCents={item.unit_price || undefined}
+            checked={!!purchased[item.id]}
+            paidTotalCents={purchased[item.id]?.totalCents}
+            onToggle={() => handleToggle(item)}
+          />
+        )}
       />
 
-      <View style={styles.footer}>
-        <View style={styles.totalContainer}>
-          <Text style={styles.totalLabel}>Total:</Text>
-          <Text style={styles.totalValue}>{formatBRL(totalAmount)}</Text>
-        </View>
-
-        <Button
-          title="Finalizar compra"
-          variant="primary"
-          onPress={handleFinish}
-          disabled={purchasedItemIds.length === 0}
-          style={styles.finishButton}
-        />
-      </View>
-    </KeyboardAvoidingView>
+      <RegisterPriceModal
+        visible={!!editingItem}
+        itemName={editingItem?.name ?? ''}
+        unit={editingItem?.unit ?? 'unidade'}
+        initialQuantity={editingItem?.quantity ?? 1}
+        initialTotalCents={
+          editingItem
+            ? purchased[editingItem.id]?.totalCents ??
+              (editingItem.unit_price > 0
+                ? editingItem.unit_price * editingItem.quantity
+                : 0)
+            : 0
+        }
+        onClose={() => setEditingItem(null)}
+        onConfirm={handleConfirmPrice}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
-  header: {
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
-  },
-  sessionTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#212121',
-  },
-  sessionSubtitle: {
-    fontSize: 14,
-    color: '#757575',
-    marginTop: 2,
+    backgroundColor: colors.background,
   },
   listContent: {
-    paddingBottom: 16,
-  },
-  listFooter: {
-    height: 140,
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
     paddingHorizontal: 16,
     paddingBottom: 24,
-    paddingTop: 16,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#F0F0F0',
-    gap: 12,
+    gap: 14,
   },
-  totalContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 4,
-  },
-  totalLabel: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#424242',
-  },
-  totalValue: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#2E7D32',
-  },
-  finishButton: {
-    marginTop: 4,
-  },
-  loadingContainer: {
+  emptyState: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+    gap: 8,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: colors.text,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: colors.textSecondary,
+    textAlign: 'center',
   },
   loadingText: {
-    fontSize: 16,
-    color: '#757575',
+    marginTop: 40,
+    textAlign: 'center',
+    color: colors.textSecondary,
   },
 });

@@ -4,3 +4,7 @@ export { Select } from './Select';
 export { ModalWrapper } from './Modal';
 export { ListItem } from './ListItem';
 export { CurrencyInput } from './CurrencyInput';
+export { AppHeader } from './AppHeader';
+export { SearchField } from './SearchField';
+export { QuickAddCard } from './QuickAddCard';
+export { SummaryCard } from './SummaryCard';

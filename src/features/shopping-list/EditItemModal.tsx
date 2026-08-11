@@ -78,7 +78,23 @@ export function EditItemModal({ visible, onClose }: EditItemModalProps) {
   if (!item) return null;
 
   return (
-    <ModalWrapper visible={visible} onClose={onClose} title="Editar Item">
+    <ModalWrapper
+      visible={visible}
+      onClose={onClose}
+      title="Editar Item"
+      footer={
+        <View style={styles.buttonRow}>
+          <Button
+            title="Salvar"
+            variant="primary"
+            onPress={handleSubmit}
+            loading={loading}
+            disabled={!name.trim()}
+          />
+          <Button title="Cancelar" variant="ghost" onPress={onClose} />
+        </View>
+      }
+    >
       <View style={styles.form}>
         <Input
           label="Nome *"
@@ -127,17 +143,6 @@ export function EditItemModal({ visible, onClose }: EditItemModalProps) {
           value={estimatedPrice}
           onChange={setEstimatedPrice}
         />
-
-        <View style={styles.buttonRow}>
-          <Button title="Cancelar" variant="ghost" onPress={onClose} />
-          <Button
-            title="Salvar"
-            variant="primary"
-            onPress={handleSubmit}
-            loading={loading}
-            disabled={!name.trim()}
-          />
-        </View>
       </View>
     </ModalWrapper>
   );
@@ -155,7 +160,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   buttonRow: {
-    flexDirection: 'row',
     gap: 12,
     marginTop: 8,
   },

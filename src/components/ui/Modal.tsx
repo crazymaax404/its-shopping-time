@@ -18,6 +18,7 @@ interface ModalProps {
   title: string;
   subtitle?: string;
   children: React.ReactNode;
+  footer?: React.ReactNode;
   style?: any;
 }
 
@@ -27,53 +28,77 @@ export function ModalWrapper({
   title,
   subtitle,
   children,
+  footer,
   style,
 }: ModalProps) {
   return (
     <Modal
       visible={visible}
-      animationType="slide"
-      presentationStyle="pageSheet"
+      transparent
+      animationType="fade"
+      onRequestClose={onClose}
     >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.container}
-        keyboardVerticalOffset={100}
+      <TouchableOpacity
+        style={styles.backdrop}
+        activeOpacity={1}
+        onPress={onClose}
       >
-        <View style={styles.header}>
-          <View style={styles.headerText}>
-            <Text style={styles.title}>{title}</Text>
-            {subtitle ? (
-              <Text style={styles.subtitle}>{subtitle}</Text>
-            ) : null}
-          </View>
-          <TouchableOpacity onPress={onClose} hitSlop={12}>
-            <Ionicons name="close" size={26} color={colors.textMuted} />
-          </TouchableOpacity>
-        </View>
-        <ScrollView
-          style={styles.content}
-          contentContainerStyle={[styles.contentContainer, style]}
-          keyboardShouldPersistTaps="handled"
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.center}
         >
-          {children}
-        </ScrollView>
-      </KeyboardAvoidingView>
+          <View style={styles.dialog} onStartShouldSetResponder={() => true}>
+            <View style={styles.header}>
+              <View style={styles.headerText}>
+                <Text style={styles.title}>{title}</Text>
+                {subtitle ? (
+                  <Text style={styles.subtitle}>{subtitle}</Text>
+                ) : null}
+              </View>
+              <TouchableOpacity onPress={onClose} hitSlop={12}>
+                <Ionicons name="close" size={24} color={colors.textMuted} />
+              </TouchableOpacity>
+            </View>
+            <ScrollView
+              style={styles.content}
+              contentContainerStyle={[styles.contentContainer, style]}
+              keyboardShouldPersistTaps="handled"
+            >
+              {children}
+            </ScrollView>
+            {footer && (
+              <View style={styles.footer}>{footer}</View>
+            )}
+          </View>
+        </KeyboardAvoidingView>
+      </TouchableOpacity>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  backdrop: {
     flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  center: {
+    width: '100%',
+    maxWidth: 400,
+  },
+  dialog: {
     backgroundColor: colors.background,
+    borderRadius: 16,
+    overflow: 'hidden',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingVertical: 14,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
@@ -83,7 +108,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700',
     color: colors.text,
   },
@@ -92,10 +117,17 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   content: {
-    flex: 1,
+    flexGrow: 0,
   },
   contentContainer: {
     padding: 16,
+    paddingBottom: 8,
     gap: 16,
+  },
+  footer: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderTopWidth: 1,
+    borderTopColor: colors.border,
   },
 });

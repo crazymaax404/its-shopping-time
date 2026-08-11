@@ -31,6 +31,8 @@ export function QuickAddCard() {
   const [notes, setNotes] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const canSubmit = name.trim().length > 0;
+
   const reset = () => {
     setName('');
     setQuantity('1');
@@ -41,14 +43,11 @@ export function QuickAddCard() {
   };
 
   const handleAdd = async () => {
-    const trimmed = name.trim();
-    if (!trimmed) {
-      Alert.alert('Nome obrigatório', 'Digite o que acabou no mercado');
-      return;
-    }
+    if (!canSubmit) return;
 
     setLoading(true);
     try {
+      const trimmed = name.trim();
       const qty = Math.max(1, parseInt(quantity, 10) || 1);
       const estimated = priceText ? parseBRL(priceText) : 0;
       let productId: string | undefined;
@@ -88,45 +87,51 @@ export function QuickAddCard() {
     }
   };
 
+  const toggleExpanded = () => setExpanded((v) => !v);
+
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>ADICIONAR RÁPIDO</Text>
+      <TouchableOpacity onPress={toggleExpanded} activeOpacity={1}>
+        <Text style={styles.title}>Adicionar Item</Text>
+      </TouchableOpacity>
 
-      <View style={styles.row}>
-        <TouchableOpacity
-          style={styles.nameField}
-          activeOpacity={0.9}
-          onPress={() => setExpanded(true)}
-        >
+      <TouchableOpacity
+        style={styles.row}
+        activeOpacity={0.9}
+        onPress={toggleExpanded}
+      >
+        <View style={styles.nameField} pointerEvents="box-none">
           <TextInput
             style={styles.nameInput}
             value={name}
-            onChangeText={(t) => {
-              setName(t);
-              if (!expanded) setExpanded(true);
-            }}
+            onChangeText={setName}
             onFocus={() => setExpanded(true)}
             placeholder="O que acabou no mercado?"
             placeholderTextColor={colors.textOnDarkMuted}
           />
-          <TouchableOpacity onPress={() => setExpanded((v) => !v)} hitSlop={8}>
-            <Ionicons
-              name={expanded ? 'chevron-up' : 'chevron-down'}
-              size={18}
-              color={colors.textOnDarkMuted}
-            />
-          </TouchableOpacity>
-        </TouchableOpacity>
+        </View>
+
+        <View style={styles.chevron}>
+          <Ionicons
+            name={expanded ? 'chevron-up' : 'chevron-down'}
+            size={18}
+            color={colors.textOnDarkMuted}
+          />
+        </View>
 
         <TouchableOpacity
-          style={[styles.addBtn, loading && { opacity: 0.6 }]}
+          style={[
+            styles.addBtn,
+            !canSubmit && styles.addBtnDisabled,
+            loading && { opacity: 0.6 },
+          ]}
           onPress={handleAdd}
-          disabled={loading}
+          disabled={!canSubmit || loading}
           activeOpacity={0.85}
         >
-          <Ionicons name="add" size={26} color="#fff" />
+          <Text style={styles.addBtnIcon}>+</Text>
         </TouchableOpacity>
-      </View>
+      </TouchableOpacity>
 
       {expanded && (
         <View style={styles.expanded}>
@@ -147,7 +152,7 @@ export function QuickAddCard() {
             />
           </View>
 
-          <Text style={styles.fieldLabel}>Preço est. (R$)</Text>
+          <Text style={styles.fieldLabel}>Preço (R$)</Text>
           <TextInput
             style={styles.darkInput}
             value={priceText}
@@ -180,9 +185,8 @@ const styles = StyleSheet.create({
   },
   title: {
     color: colors.textOnDark,
-    fontSize: 13,
+    fontSize: 18,
     fontWeight: '700',
-    letterSpacing: 0.6,
   },
   row: {
     flexDirection: 'row',
@@ -205,6 +209,10 @@ const styles = StyleSheet.create({
     fontSize: 15,
     paddingVertical: 0,
   },
+  chevron: {
+    marginLeft: -8,
+    paddingHorizontal: 4,
+  },
   addBtn: {
     width: 48,
     height: 48,
@@ -213,13 +221,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  addBtnDisabled: {
+    backgroundColor: colors.navySoft,
+  },
+  addBtnIcon: {
+    color: '#fff',
+    fontSize: 28,
+    fontWeight: '600',
+    lineHeight: 30,
+  },
   expanded: {
     gap: 8,
   },
   fieldLabel: {
     color: colors.textOnDark,
     fontSize: 13,
-    fontWeight: '500',
+    fontWeight: '700',
     marginTop: 4,
   },
   qtyRow: {

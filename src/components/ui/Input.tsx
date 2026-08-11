@@ -1,6 +1,6 @@
 import React from 'react';
 import { TextInput, View, Text, StyleSheet, TextInputProps } from 'react-native';
-import { colors } from '@/theme';
+import { colors, fontFamily } from '@/theme';
 
 interface InputProps {
   label?: string;
@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '500',
+    fontFamily: fontFamily.medium,
     color: colors.textSecondary,
   },
   labelDark: {

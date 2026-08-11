@@ -15,7 +15,7 @@ import {
 } from '@/components/ui';
 import { RegisterPriceModal } from './RegisterPriceModal';
 import { ShoppingItem } from '@/types/supabase';
-import { colors } from '@/theme';
+import { colors, fontFamily } from '@/theme';
 
 export function PurchaseScreen() {
   const navigation = useNavigation<any>();
@@ -215,6 +215,7 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 20,
     fontWeight: '700',
+    fontFamily: fontFamily.bold,
     color: colors.text,
   },
   emptySubtitle: {

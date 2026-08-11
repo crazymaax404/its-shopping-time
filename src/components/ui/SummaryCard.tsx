@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { formatBRL } from '@/utils/currency';
-import { colors } from '@/theme';
+import { colors, fontFamily } from '@/theme';
 
 interface ListSummaryProps {
   variant: 'list';
@@ -144,6 +144,7 @@ const styles = StyleSheet.create({
   listTitle: {
     fontSize: 18,
     fontWeight: '700',
+    fontFamily: fontFamily.bold,
     color: colors.text,
   },
   badge: {
@@ -155,6 +156,7 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 11,
     fontWeight: '700',
+    fontFamily: fontFamily.bold,
     color: colors.primaryDark,
   },
   listMeta: {
@@ -171,12 +173,14 @@ const styles = StyleSheet.create({
   estimateLabel: {
     fontSize: 11,
     fontWeight: '600',
+    fontFamily: fontFamily.semiBold,
     color: colors.textMuted,
     letterSpacing: 0.4,
   },
   estimateValue: {
     fontSize: 26,
     fontWeight: '800',
+    fontFamily: fontFamily.extraBold,
     color: colors.text,
     marginTop: 2,
   },
@@ -192,6 +196,7 @@ const styles = StyleSheet.create({
   startBtnText: {
     color: '#fff',
     fontWeight: '700',
+    fontFamily: fontFamily.bold,
     fontSize: 14,
   },
   btnDisabled: {
@@ -229,6 +234,7 @@ const styles = StyleSheet.create({
     color: colors.textOnDark,
     fontSize: 16,
     fontWeight: '700',
+    fontFamily: fontFamily.bold,
   },
   marketMeta: {
     color: colors.textOnDarkMuted,
@@ -247,6 +253,7 @@ const styles = StyleSheet.create({
     color: colors.primaryMuted,
     fontSize: 12,
     fontWeight: '700',
+    fontFamily: fontFamily.bold,
   },
   finishBtnTextDisabled: {
     color: colors.textOnDarkMuted,
@@ -261,12 +268,14 @@ const styles = StyleSheet.create({
     color: colors.textOnDarkMuted,
     fontSize: 11,
     fontWeight: '600',
+    fontFamily: fontFamily.semiBold,
     letterSpacing: 0.4,
   },
   progressTotal: {
     color: colors.textOnDark,
     fontSize: 28,
     fontWeight: '800',
+    fontFamily: fontFamily.extraBold,
   },
   progressTrack: {
     height: 8,

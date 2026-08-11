@@ -16,7 +16,7 @@ import {
 import { AppHeader, SearchField } from '@/components/ui';
 import { formatBRL } from '@/utils/currency';
 import { Product } from '@/types/supabase';
-import { colors } from '@/theme';
+import { colors, fontFamily } from '@/theme';
 
 export function RecentsScreen() {
   const { data: products, isLoading } = useProducts();
@@ -169,6 +169,7 @@ const styles = StyleSheet.create({
     color: colors.textOnDark,
     fontSize: 18,
     fontWeight: '700',
+    fontFamily: fontFamily.bold,
   },
   heroSubtitle: {
     color: colors.textOnDarkMuted,
@@ -203,6 +204,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 16,
     fontWeight: '600',
+    fontFamily: fontFamily.semiBold,
     color: colors.text,
   },
   onListBadge: {
@@ -214,6 +216,7 @@ const styles = StyleSheet.create({
   onListText: {
     fontSize: 10,
     fontWeight: '800',
+    fontFamily: fontFamily.extraBold,
     color: colors.primaryDark,
   },
   meta: {
@@ -236,6 +239,7 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 17,
     fontWeight: '600',
+    fontFamily: fontFamily.semiBold,
     color: colors.text,
   },
   emptySubtitle: {

@@ -13,7 +13,7 @@ import { formatDateTimeBR } from '@/utils/date';
 import { formatBRL } from '@/utils/currency';
 import { AppHeader } from '@/components/ui';
 import { ShoppingSession } from '@/types/supabase';
-import { colors } from '@/theme';
+import { colors, fontFamily } from '@/theme';
 
 export function HistoryListScreen() {
   const navigation = useNavigation<any>();
@@ -103,6 +103,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: '700',
+    fontFamily: fontFamily.bold,
     color: colors.text,
   },
   countBadge: {
@@ -114,6 +115,7 @@ const styles = StyleSheet.create({
   countText: {
     fontSize: 11,
     fontWeight: '800',
+    fontFamily: fontFamily.extraBold,
     color: colors.primaryDark,
   },
   listContent: {
@@ -151,6 +153,7 @@ const styles = StyleSheet.create({
   date: {
     fontSize: 15,
     fontWeight: '600',
+    fontFamily: fontFamily.semiBold,
     color: colors.text,
   },
   subtitle: {
@@ -163,12 +166,14 @@ const styles = StyleSheet.create({
   totalLabel: {
     fontSize: 10,
     fontWeight: '700',
+    fontFamily: fontFamily.bold,
     color: colors.textMuted,
     letterSpacing: 0.4,
   },
   totalValue: {
     fontSize: 18,
     fontWeight: '800',
+    fontFamily: fontFamily.extraBold,
     color: colors.primary,
     fontVariant: ['tabular-nums'],
   },
@@ -180,6 +185,7 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 18,
     fontWeight: '600',
+    fontFamily: fontFamily.semiBold,
     color: colors.text,
   },
   emptySubtitle: {

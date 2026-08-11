@@ -10,7 +10,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '@/theme';
+import { colors, fontFamily } from '@/theme';
 
 interface ModalProps {
   visible: boolean;
@@ -110,6 +110,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: '700',
+    fontFamily: fontFamily.bold,
     color: colors.text,
   },
   subtitle: {

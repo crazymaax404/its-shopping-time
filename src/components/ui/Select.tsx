@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '@/theme';
+import { colors, fontFamily } from '@/theme';
 
 interface SelectOption {
   label: string;
@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '500',
+    fontFamily: fontFamily.medium,
     color: colors.textSecondary,
   },
   labelDark: {
@@ -196,6 +197,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: '600',
+    fontFamily: fontFamily.semiBold,
     color: colors.text,
   },
   option: {
@@ -216,5 +218,6 @@ const styles = StyleSheet.create({
   optionTextSelected: {
     color: colors.primaryDark,
     fontWeight: '600',
+    fontFamily: fontFamily.semiBold,
   },
 });

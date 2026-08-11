@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { ShoppingListItem } from '@/types/supabase';
 import { formatBRL } from '@/utils/currency';
-import { colors } from '@/theme';
+import { colors, fontFamily } from '@/theme';
 
 interface ListVariantProps {
   variant?: 'list';
@@ -154,6 +154,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 16,
     fontWeight: '600',
+    fontFamily: fontFamily.semiBold,
     color: colors.text,
   },
   qtyBadge: {
@@ -165,12 +166,14 @@ const styles = StyleSheet.create({
   qtyBadgeText: {
     fontSize: 11,
     fontWeight: '700',
+    fontFamily: fontFamily.bold,
     color: colors.primaryDark,
   },
   price: {
     fontSize: 13,
     color: colors.textSecondary,
     fontWeight: '600',
+    fontFamily: fontFamily.semiBold,
   },
   actions: {
     flexDirection: 'row',
@@ -194,5 +197,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.textSecondary,
     fontWeight: '500',
+    fontFamily: fontFamily.medium,
   },
 });

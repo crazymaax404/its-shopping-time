@@ -15,7 +15,7 @@ import {
 } from '@/services/supabase/hooks';
 import { UNITS, Unit, ShoppingListItemInsert } from '@/types/supabase';
 import { parseBRL } from '@/utils/currency';
-import { colors } from '@/theme';
+import { colors, fontFamily } from '@/theme';
 import { Select } from './Select';
 
 export function QuickAddCard() {
@@ -187,6 +187,7 @@ const styles = StyleSheet.create({
     color: colors.textOnDark,
     fontSize: 18,
     fontWeight: '700',
+    fontFamily: fontFamily.bold,
   },
   row: {
     flexDirection: 'row',
@@ -228,6 +229,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 28,
     fontWeight: '600',
+    fontFamily: fontFamily.semiBold,
     lineHeight: 30,
   },
   expanded: {
@@ -237,6 +239,7 @@ const styles = StyleSheet.create({
     color: colors.textOnDark,
     fontSize: 13,
     fontWeight: '700',
+    fontFamily: fontFamily.bold,
     marginTop: 4,
   },
   qtyRow: {

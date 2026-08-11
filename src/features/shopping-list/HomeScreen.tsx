@@ -16,7 +16,7 @@ import {
   ListItem,
 } from '@/components/ui';
 import { ShoppingListItem } from '@/types/supabase';
-import { colors } from '@/theme';
+import { colors, fontFamily } from '@/theme';
 
 export function HomeScreen() {
   const navigation = useNavigation<any>();
@@ -162,6 +162,7 @@ const styles = StyleSheet.create({
   emptyTitle: {
     fontSize: 18,
     fontWeight: '600',
+    fontFamily: fontFamily.semiBold,
     color: colors.text,
   },
   emptySubtitle: {

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '@/theme';
+import { colors, fontFamily } from '@/theme';
 
 export function AppHeader() {
   const insets = useSafeAreaInsets();
@@ -45,6 +45,7 @@ const styles = StyleSheet.create({
   brand: {
     fontSize: 18,
     fontWeight: '700',
+    fontFamily: fontFamily.bold,
     color: colors.text,
   },
 

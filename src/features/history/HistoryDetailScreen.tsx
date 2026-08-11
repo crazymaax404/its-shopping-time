@@ -20,7 +20,7 @@ import { formatBRL } from '@/utils/currency';
 import { AppHeader } from '@/components/ui';
 import { ShoppingItem } from '@/types/supabase';
 import { AppStackParamList } from '@/core/navigation/types';
-import { colors } from '@/theme';
+import { colors, fontFamily } from '@/theme';
 
 export function HistoryDetailScreen() {
   const navigation = useNavigation<any>();
@@ -181,6 +181,7 @@ const styles = StyleSheet.create({
   backText: {
     fontSize: 13,
     fontWeight: '600',
+    fontFamily: fontFamily.semiBold,
     color: colors.text,
   },
   againBtn: {
@@ -196,6 +197,7 @@ const styles = StyleSheet.create({
   againText: {
     fontSize: 13,
     fontWeight: '700',
+    fontFamily: fontFamily.bold,
     color: '#fff',
   },
   summaryCard: {
@@ -217,6 +219,7 @@ const styles = StyleSheet.create({
     color: colors.textOnDark,
     fontSize: 20,
     fontWeight: '800',
+    fontFamily: fontFamily.extraBold,
     marginTop: 4,
   },
   statusPill: {
@@ -230,6 +233,7 @@ const styles = StyleSheet.create({
     color: colors.primaryMuted,
     fontSize: 11,
     fontWeight: '800',
+    fontFamily: fontFamily.extraBold,
   },
   summaryBottom: {
     flexDirection: 'row',
@@ -247,16 +251,19 @@ const styles = StyleSheet.create({
     color: colors.primaryMuted,
     fontSize: 11,
     fontWeight: '700',
+    fontFamily: fontFamily.bold,
   },
   paidValue: {
     color: colors.primary,
     fontSize: 26,
     fontWeight: '800',
+    fontFamily: fontFamily.extraBold,
     marginTop: 2,
   },
   sectionTitle: {
     fontSize: 12,
     fontWeight: '800',
+    fontFamily: fontFamily.extraBold,
     color: colors.textMuted,
     letterSpacing: 0.6,
     marginTop: 4,
@@ -275,6 +282,7 @@ const styles = StyleSheet.create({
   itemName: {
     fontSize: 16,
     fontWeight: '600',
+    fontFamily: fontFamily.semiBold,
     color: colors.text,
   },
   itemDetail: {
@@ -284,6 +292,7 @@ const styles = StyleSheet.create({
   itemTotal: {
     fontSize: 16,
     fontWeight: '700',
+    fontFamily: fontFamily.bold,
     color: colors.text,
   },
   separator: {

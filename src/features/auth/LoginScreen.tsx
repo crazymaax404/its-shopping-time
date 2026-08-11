@@ -9,7 +9,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '@/core/providers/AuthProvider';
 import { Button, Input } from '@/components/ui';
-import { colors } from '@/theme';
+import { colors, fontFamily } from '@/theme';
 
 export function LoginScreen() {
   const { signIn } = useAuth();
@@ -107,6 +107,7 @@ const styles = StyleSheet.create({
   appName: {
     fontSize: 28,
     fontWeight: '700',
+    fontFamily: fontFamily.bold,
     color: colors.text,
   },
   formContainer: {

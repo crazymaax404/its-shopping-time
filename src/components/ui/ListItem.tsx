@@ -73,14 +73,6 @@ export function ListItem(props: ListItemProps) {
 
   return (
     <View style={styles.listRow}>
-      <TouchableOpacity
-        style={[styles.checkbox, checked && styles.checkboxChecked]}
-        onPress={onToggle}
-        activeOpacity={0.85}
-      >
-        {checked && <Ionicons name="checkmark" size={16} color="#fff" />}
-      </TouchableOpacity>
-
       <View style={styles.listInfo}>
         <View style={styles.nameRow}>
           <Text style={styles.name}>{item.name}</Text>
@@ -90,8 +82,7 @@ export function ListItem(props: ListItemProps) {
             </Text>
           </View>
         </View>
-        <Text style={styles.estPrice}>
-          Est.:{' '}
+        <Text style={styles.price}>
           {item.estimated_price != null
             ? formatBRL(item.estimated_price)
             : '—'}
@@ -176,9 +167,10 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.primaryDark,
   },
-  estPrice: {
+  price: {
     fontSize: 13,
     color: colors.textSecondary,
+    fontWeight: '600',
   },
   actions: {
     flexDirection: 'row',

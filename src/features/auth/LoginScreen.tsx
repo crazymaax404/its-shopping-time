@@ -44,7 +44,7 @@ export function LoginScreen() {
         <View style={styles.logo}>
           <Ionicons name="bag-handle" size={36} color="#fff" />
         </View>
-        <Text style={styles.appName}>Comprinhas</Text>
+        <Text style={styles.appName}>Nossa Listinha</Text>
       </View>
 
       <View style={styles.formContainer}>

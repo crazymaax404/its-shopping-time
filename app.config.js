@@ -2,15 +2,15 @@ import 'dotenv/config';
 
 export default {
   expo: {
-    name: 'comprinhas',
-    slug: 'comprinhas',
+    name: 'Nossa Listinha',
+    slug: 'its-shopping-time',
     version: '1.0.0',
     orientation: 'portrait',
     icon: './assets/icon.png',
     userInterfaceStyle: 'light',
     ios: {
       supportsTablet: true,
-      bundleIdentifier: 'com.maxdev.comprinhas',
+      bundleIdentifier: 'com.maxdev.itsshoppingtime',
     },
     android: {
       adaptiveIcon: {
@@ -20,7 +20,7 @@ export default {
         monochromeImage: './assets/android-icon-monochrome.png',
       },
       predictiveBackGestureEnabled: false,
-      package: 'com.maxdev.comprinhas',
+      package: 'com.maxdev.itsshoppingtime',
     },
     web: {
       favicon: './assets/favicon.png',

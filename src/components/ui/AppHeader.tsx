@@ -28,7 +28,7 @@ export function AppHeader() {
         <View style={styles.logo}>
           <Ionicons name="bag-handle" size={18} color="#fff" />
         </View>
-        <Text style={styles.brand}>Comprinhas</Text>
+        <Text style={styles.brand}>Nossa Listinha</Text>
         <View style={styles.statusPill}>
           <View style={styles.statusDot} />
         </View>

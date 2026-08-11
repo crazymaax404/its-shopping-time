@@ -87,9 +87,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.maxdev.comprinhas'
+    namespace 'com.maxdev.itsshoppingtime'
     defaultConfig {
-        applicationId 'com.maxdev.comprinhas'
+        applicationId 'com.maxdev.itsshoppingtime'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

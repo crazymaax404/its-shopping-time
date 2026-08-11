@@ -1,4 +1,4 @@
-package com.maxdev.comprinhas
+package com.maxdev.itsshoppingtime
 
 import android.os.Build
 import android.os.Bundle

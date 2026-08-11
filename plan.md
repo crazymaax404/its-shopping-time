@@ -79,7 +79,7 @@ Tela inicial do aplicativo:
 ```text
 ┌─────────────────────────┐
 │                         │
-│      🛒 Comprinhas      │
+│      🛒 Nossa Listinha      │
 │                         │
 │  E-mail                 │
 │  [___________________]  │
